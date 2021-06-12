@@ -22,6 +22,9 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider provider = Provider.of<AuthProvider>(context);
+    if(provider.UserData.refreshToken != null){
+      provider.getAccessToken();
+    }
     return Scaffold(
       body: Material(
         child: Container(
