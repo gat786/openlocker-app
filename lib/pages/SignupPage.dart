@@ -16,7 +16,7 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController emailAddressController = new TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  final _loginFormKey = new GlobalKey<FormState>();
+  final _signupFormKey = new GlobalKey<FormState>();
   var passwordFieldHidden = true;
 
   @override
@@ -25,8 +25,14 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: Material(
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -38,7 +44,9 @@ class _SignupPageState extends State<SignupPage> {
                     "OPENLOCKER",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme
+                            .of(context)
+                            .primaryColor,
                         fontSize: 32.0),
                   ),
                 ),
@@ -48,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: Form(
-                    key: _loginFormKey,
+                    key: _signupFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -56,7 +64,7 @@ class _SignupPageState extends State<SignupPage> {
                           controller: userNameController,
                           validator: validateUsername,
                           decoration: InputDecoration(
-                            hintText: "UserName"
+                              hintText: "UserName"
                           ),
                         ),
                         SizedBox(
@@ -79,15 +87,15 @@ class _SignupPageState extends State<SignupPage> {
                           decoration: InputDecoration(
                               hintText: "Password",
                               suffixIcon: IconButton(
-                            onPressed: () {
-                              this.setState(() {
-                                passwordFieldHidden = !passwordFieldHidden;
-                              });
-                            },
-                            icon: Icon(passwordFieldHidden
-                                ? Icons.remove_red_eye
-                                : Icons.remove_red_eye_outlined),
-                          )),
+                                onPressed: () {
+                                  this.setState(() {
+                                    passwordFieldHidden = !passwordFieldHidden;
+                                  });
+                                },
+                                icon: Icon(passwordFieldHidden
+                                    ? Icons.remove_red_eye
+                                    : Icons.remove_red_eye_outlined),
+                              )),
                         ),
                         SizedBox(
                           height: 16,
@@ -95,15 +103,19 @@ class _SignupPageState extends State<SignupPage> {
                         InkWell(
                           onTap: () {
                             print("Validating");
-                            if (_loginFormKey.currentState!.validate()) {
+                            if (_signupFormKey.currentState!.validate()) {
                               // validation successful
-                              provider.loginUser(userNameController.text,
-                                  passwordController.text);
+                              provider.signupUser(
+                                  userName: userNameController.text,
+                                  emailAddress: emailAddressController.text,
+                                  password: passwordController.text);
                             }
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor),
+                                color: Theme
+                                    .of(context)
+                                    .primaryColor),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -129,12 +141,15 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.popAndPushNamed(context, Routes.LoginPage);
+                                Navigator.popAndPushNamed(
+                                    context, Routes.LoginPage);
                               },
                               child: Text(
                                 "Sign in",
                                 style: TextStyle(
-                                    color: Theme.of(context).primaryColor),
+                                    color: Theme
+                                        .of(context)
+                                        .primaryColor),
                               ),
                             )
                           ],

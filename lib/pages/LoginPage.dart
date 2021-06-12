@@ -57,9 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                         TextFormField(
                           controller: userNameController,
                           validator: validateUsername,
-                          decoration: InputDecoration(
-                            hintText: "Username"
-                          ),
+                          decoration: InputDecoration(hintText: "Username"),
                         ),
                         SizedBox(
                           height: 8,
@@ -69,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                           validator: validatePassword,
                           obscureText: passwordFieldHidden,
                           decoration: InputDecoration(
-                            hintText: "Password",
+                              hintText: "Password",
                               suffixIcon: IconButton(
                                 onPressed: () {
                                   this.setState(() {
@@ -81,14 +79,17 @@ class _LoginPageState extends State<LoginPage> {
                                     : Icons.remove_red_eye_outlined),
                               )),
                         ),
-                        SizedBox(height: 16,),
+                        SizedBox(
+                          height: 16,
+                        ),
                         InkWell(
                           onTap: () {
                             print("Validating");
                             if (_loginFormKey.currentState!.validate()) {
                               // validation successful
                               provider.loginUser(
-                                  userNameController.text, passwordController.text);
+                                  userName: userNameController.text,
+                                  password: passwordController.text);
                             }
                           },
                           child: Container(
@@ -107,22 +108,27 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-
-                        SizedBox(height: 16,),
-
+                        SizedBox(
+                          height: 16,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text("Dont have an account?"),
-                            SizedBox(width: 8,),
+                            SizedBox(
+                              width: 8,
+                            ),
                             InkWell(
-                              onTap: (){
-
-                                Navigator.popAndPushNamed(context, Routes.SignupPage);
+                              onTap: () {
+                                Navigator.popAndPushNamed(
+                                    context, Routes.SignupPage);
                               },
-                              child: Text("Sign up", style: TextStyle(color: Theme.of(context).primaryColor),),
+                              child: Text(
+                                "Sign up",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             )
-
                           ],
                         )
                       ],

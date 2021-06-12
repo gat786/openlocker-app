@@ -30,21 +30,43 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void loginUser(String userName, String password) async {
+  void loginUser({required String userName, required String password}) async {
     var uri = API_ENDPOINT + "user/login";
-    var jsonBody = jsonEncode({ 'username': userName, 'password': password});
+    var jsonBody = jsonEncode({'username': userName, 'password': password});
     var commonService = await CommonService.getInstance();
     var response = await commonService.post(url: uri, body: jsonBody);
-    var standardResponse = StandardResponse.fromJson(Map<String,dynamic>.from(jsonDecode(response.toString())));
-    print(standardResponse.data);
-    if (standardResponse.success == true) {
+    var standardResponse = StandardResponse.fromJson(
+        Map<String, dynamic>.from(jsonDecode(response.toString())));
 
+    if (standardResponse.success == true) {
       LoggedIn = true;
-      var user = new User(userName: standardResponse.data["username"],
+      var user = new User(
+          userName: standardResponse.data["username"],
           emailAddress: standardResponse.data["emailAddress"],
-        refreshToken: standardResponse.data["refreshToken"]["token"]
-      );
+          refreshToken: standardResponse.data["refreshToken"]["token"]);
       UserData = user;
+    }
+  }
+
+  void signupUser(
+      {required String userName,
+      required String emailAddress,
+      required String password}) async {
+
+    var uri = API_ENDPOINT + "user/register";
+
+    var jsonBody = jsonEncode({
+      'username': userName,
+      'emailAddress': emailAddress,
+      'password': password
+    });
+
+    CommonService commonService = await CommonService.getInstance();
+    var response = await commonService.post(url: uri, body: jsonBody);
+    var standardResponse = StandardResponse.fromJson(
+        Map<String, dynamic>.from(jsonDecode(response.toString())));
+    if(standardResponse.success == true){
+      print("User registration successful");
     }
   }
 
