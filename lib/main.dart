@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider())],
-        child: Material(child: HomePage())
+        child: Scaffold(body: Material(child: HomePage()))
     );
   }
 }

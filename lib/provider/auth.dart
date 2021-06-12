@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:open_locker_app/constants.dart';
+import 'package:open_locker_app/models/standard_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:open_locker_app/services/common.service.dart';
 import "../models/user.dart";
 
 class AuthProvider with ChangeNotifier {
@@ -16,6 +17,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   User get UserData => _userData;
+
   bool get LoggedIn => _isLoggedIn;
 
   set LoggedIn(bool newValue) {
@@ -23,16 +25,27 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set UserData(User user){
+  set UserData(User user) {
     _userData = user;
     notifyListeners();
   }
 
   void loginUser(String userName, String password) async {
-    var uri = Uri.parse(API_ENDPOINT + "user/login");
-    var jsonBody = jsonEncode({ 'username' : userName, 'password' : password});
-    var response = await http.post(uri,headers: { 'Content-Type' : 'application/json'}, body: jsonBody);
-    print(response.body);
+    var uri = API_ENDPOINT + "user/login";
+    var jsonBody = jsonEncode({ 'username': userName, 'password': password});
+    var commonService = await CommonService.getInstance();
+    var response = await commonService.post(url: uri, body: jsonBody);
+    var standardResponse = StandardResponse.fromJson(Map<String,dynamic>.from(jsonDecode(response.toString())));
+    print(standardResponse.data);
+    if (standardResponse.success == true) {
+
+      LoggedIn = true;
+      var user = new User(userName: standardResponse.data["username"],
+          emailAddress: standardResponse.data["emailAddress"],
+        refreshToken: standardResponse.data["refreshToken"]["token"]
+      );
+      UserData = user;
+    }
   }
 
   void setup() async {

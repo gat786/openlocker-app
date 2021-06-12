@@ -15,6 +15,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider _authData = Provider.of<AuthProvider>(context);
+    if(_authData.LoggedIn){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Logged in bros")));
+    }
     return LoginPage();
   }
 }
