@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:open_locker_app/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import "../models/user.dart";
 
@@ -25,8 +28,11 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void loginUser(String userName, String password){
-
+  void loginUser(String userName, String password) async {
+    var uri = Uri.parse(API_ENDPOINT + "user/login");
+    var jsonBody = jsonEncode({ 'username' : userName, 'password' : password});
+    var response = await http.post(uri,headers: { 'Content-Type' : 'application/json'}, body: jsonBody);
+    print(response.body);
   }
 
   void setup() async {

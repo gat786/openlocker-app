@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider provider = Provider.of<AuthProvider>(context);
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
@@ -91,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                           print("Validating");
                           if (_loginFormKey.currentState!.validate()) {
                             // validation successful
-                            print(_loginFormKey.currentState);
+                            provider.loginUser(userNameController.text,passwordController.text);
                           }
                         },
                         child: Padding(
