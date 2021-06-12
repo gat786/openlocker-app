@@ -20,3 +20,13 @@ String? validatePassword(String? value){
   }
   return null;
 }
+
+String? validateEmail(String? value){
+  if(value == null || value.isEmpty){
+    return "Email Address cannot be empty";
+  }
+  if(!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)){
+    return "Input an email address";
+  }
+  return null;
+}
