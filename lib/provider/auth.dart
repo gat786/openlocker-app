@@ -13,6 +13,7 @@ import "../models/user.dart";
 
 class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
+  bool _isProcessing = false;
   User _userData = User();
 
   AuthProvider() {
@@ -23,8 +24,15 @@ class AuthProvider with ChangeNotifier {
 
   bool get LoggedIn => _isLoggedIn;
 
+  bool get isProcessing => _isProcessing;
+
   set LoggedIn(bool newValue) {
     _isLoggedIn = newValue;
+    notifyListeners();
+  }
+
+  set isProcessing(bool newValue){
+    _isProcessing = newValue;
     notifyListeners();
   }
 
@@ -34,6 +42,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   void loginUser({required String userName, required String password}) async {
+    isProcessing = true;
     var uri = API_ENDPOINT + "user/login";
     var jsonBody = jsonEncode({'username': userName, 'password': password});
     var commonService = await CommonService.getInstance();
@@ -51,13 +60,14 @@ class AuthProvider with ChangeNotifier {
       updateSharedUserPreferences(user);
       UserData = user;
     }
+    isProcessing = false;
   }
 
   void signupUser(
       {required String userName,
       required String emailAddress,
       required String password}) async {
-
+    isProcessing = true;
     var uri = API_ENDPOINT + "user/register";
 
     var jsonBody = jsonEncode({
@@ -79,12 +89,15 @@ class AuthProvider with ChangeNotifier {
       updateSharedUserPreferences(user);
       UserData = user;
     }
+    isProcessing = false;
   }
 
   void getAccessToken() async {
+    isProcessing = true;
     var uri = API_ENDPOINT + "user/get-new-tokens";
     CommonService commonService = await CommonService.getInstance();
     var response = await commonService.post(url: uri);
+    isProcessing = false;
   }
 
   void setup() async {
@@ -96,5 +109,6 @@ class AuthProvider with ChangeNotifier {
     if (username != null && emailAddress != null) {
       UserData = User(userName: username, emailAddress: emailAddress,refreshToken: refreshToken);
     }
+
   }
 }
