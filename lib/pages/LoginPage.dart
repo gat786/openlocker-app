@@ -15,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   final _loginFormKey = new GlobalKey<FormState>();
-  var isTextVisible = false;
+  var passwordFieldHidden = true;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +37,9 @@ class _LoginPageState extends State<LoginPage> {
                     color: Theme.of(context).primaryColor,
                     fontSize: 32.0),
               ),
+            ),
+            SizedBox(
+              height: 40,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -70,40 +73,63 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: passwordController,
                       validator: validatePassword,
-                      obscureText: isTextVisible,
+                      obscureText: passwordFieldHidden,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           suffixIcon: IconButton(
                             onPressed: () {
                               this.setState(() {
-                                isTextVisible = !isTextVisible;
+                                passwordFieldHidden = !passwordFieldHidden;
                               });
                             },
-                            icon: Icon(isTextVisible
-                                ? Icons.remove_red_eye_outlined
-                                : Icons.remove_red_eye),
+                            icon: Icon(passwordFieldHidden
+                                ? Icons.remove_red_eye
+                                : Icons.remove_red_eye_outlined),
                           )),
                     ),
-                    Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: MaterialButton(
-                        onPressed: () {
-                          print("Validating");
-                          if (_loginFormKey.currentState!.validate()) {
-                            // validation successful
-                            provider.loginUser(userNameController.text,passwordController.text);
-
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Login",
-                          ),
+                    SizedBox(height: 16,),
+                    InkWell(
+                      onTap: () {
+                        print("Validating");
+                        if (_loginFormKey.currentState!.validate()) {
+                          // validation successful
+                          provider.loginUser(
+                              userNameController.text, passwordController.text);
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text("Login",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white)),
+                            ),
+                          ],
                         ),
                       ),
-                    ))
+                    ),
+
+                    SizedBox(height: 16,),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Dont have an account?"),
+                        SizedBox(width: 8,),
+                        InkWell(
+                          onTap: (){
+
+                          },
+                          child: Text("Sign up", style: TextStyle(color: Theme.of(context).primaryColor),),
+                        )
+
+                      ],
+                    )
                   ],
                 ),
               ),
