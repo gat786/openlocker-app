@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:open_locker_app/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import "../models/User.dart";
+import "../models/user.dart";
 
 class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
@@ -23,6 +23,10 @@ class AuthProvider with ChangeNotifier {
   set UserData(User user){
     _userData = user;
     notifyListeners();
+  }
+
+  void loginUser(String userName, String password){
+
   }
 
   void setup() async {
