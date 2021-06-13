@@ -3,8 +3,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/models/files_response.dart';
+import 'package:open_locker_app/models/media_type.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:open_locker_app/widgets/selectable_chip.dart';
 import 'package:provider/provider.dart';
 
 class DrivePage extends StatefulWidget {
@@ -120,15 +122,41 @@ class DriveHomePage extends StatefulWidget {
 }
 
 class _DriveHomePageState extends State<DriveHomePage> {
+
+  var MediaTypes = [
+    MediaType(title: "Image", icon: Icon(Icons.image)),
+    MediaType(title: "Music", icon: Icon(Icons.music_note)),
+    MediaType(title: "Documents", icon: Icon(Icons.picture_as_pdf)),
+    MediaType(title: "Videos", icon: Icon(Icons.videocam_sharp)),
+  ];
+
+  changeSelectedMediaType(int selectedIndex){
+    setState(() {
+      MediaTypes.asMap().forEach((key, value) {
+        if(key == selectedIndex){
+          value.isSelected = true;
+        }
+        else{
+          value.isSelected = false;
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     FileProvider fileProvider = Provider.of<FileProvider>(context);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    try{
-      fileProvider.getFlatFiles(authProvider.accessToken);
-    } on TokenExpiredException {
-      authProvider.getAccessToken();
+
+    getFiles() async {
+      try{
+        await fileProvider.getFlatFiles(authProvider.accessToken);
+      } on TokenExpiredException {
+        await authProvider.getAccessToken();
+      }
     }
+
+    getFiles();
 
     Iterable<Widget> files = fileProvider.flatFiles.map<Widget>((File element) {
       return ListTile(
@@ -137,10 +165,51 @@ class _DriveHomePageState extends State<DriveHomePage> {
       );
     });
 
+
     return Scaffold(
       appBar: AppBar(title: Text("All Files"),automaticallyImplyLeading: false),
-      body: Column(
-        children: files.toList(),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 60,
+              child: Row(
+                children: [
+                  SelectableChip(
+                    icon: MediaTypes[0].icon,
+                    title: MediaTypes[0].title,
+                    isSelected: MediaTypes[0].isSelected,
+                    callback:(){ changeSelectedMediaType(0);},
+                  ),
+                  SelectableChip(
+                      icon: MediaTypes[1].icon,
+                      title: MediaTypes[1].title,
+                    isSelected: MediaTypes[1].isSelected,
+                    callback:(){ changeSelectedMediaType(1);},
+                  ),
+                  SelectableChip(
+                      icon: MediaTypes[2].icon,
+                      title: MediaTypes[2].title,
+                    isSelected: MediaTypes[2].isSelected,
+                    callback:(){ changeSelectedMediaType(2);},
+                  ),
+                  SelectableChip(
+                      icon: MediaTypes[3].icon,
+                      title: MediaTypes[3].title,
+                    isSelected: MediaTypes[3].isSelected,
+                    callback:(){ changeSelectedMediaType(3);},
+                  ),
+                ],
+              )
+            ),
+
+            Divider(thickness: 2,),
+
+            ...files.toList()
+          ],
+        ),
       ),
     );
   }
