@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:open_locker_app/constants.dart';
@@ -13,36 +12,30 @@ import "../models/user.dart";
 
 class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
-  bool _isProcessing = false;
   User _userData = User();
+  String _accessToken = "";
 
   AuthProvider() {
     setup();
   }
 
-  User get UserData => _userData;
+  User get userData => _userData;
 
-  bool get LoggedIn => _isLoggedIn;
+  bool get isLoggedIn => _isLoggedIn;
 
-  bool get isProcessing => _isProcessing;
+  String get accessToken => _accessToken;
 
-  set LoggedIn(bool newValue) {
+  set isLoggedIn(bool newValue) {
     _isLoggedIn = newValue;
     notifyListeners();
   }
 
-  set isProcessing(bool newValue){
-    _isProcessing = newValue;
-    notifyListeners();
-  }
-
-  set UserData(User user) {
+  set userData(User user) {
     _userData = user;
     notifyListeners();
   }
 
-  void loginUser({required String userName, required String password}) async {
-    isProcessing = true;
+  Future loginUser({required String userName, required String password}) async {
     var uri = API_ENDPOINT + "user/login";
     var jsonBody = jsonEncode({'username': userName, 'password': password});
     var commonService = await CommonService.getInstance();
@@ -51,23 +44,25 @@ class AuthProvider with ChangeNotifier {
         Map<String, dynamic>.from(jsonDecode(response.toString())));
 
     if (standardResponse.success == true) {
-      LoggedIn = true;
-      var login_response = LoginResponse.fromJson(Map.from(standardResponse.data));
+      isLoggedIn = true;
+      var login_response =
+          LoginResponse.fromJson(Map.from(standardResponse.data));
       var user = new User(
           userName: login_response.username,
           emailAddress: login_response.emailAddress,
           refreshToken: login_response.refreshToken?.token ?? "");
       updateSharedUserPreferences(user);
-      UserData = user;
+      userData = user;
     }
-    isProcessing = false;
+    else{
+      throw Exception(standardResponse.message);
+    }
   }
 
-  void signupUser(
+  Future signupUser(
       {required String userName,
       required String emailAddress,
       required String password}) async {
-    isProcessing = true;
     var uri = API_ENDPOINT + "user/register";
 
     var jsonBody = jsonEncode({
@@ -80,24 +75,42 @@ class AuthProvider with ChangeNotifier {
     var response = await commonService.post(url: uri, body: jsonBody);
     var standardResponse = StandardResponse.fromJson(
         Map<String, dynamic>.from(jsonDecode(response.toString())));
-    if(standardResponse.success == true){
-      var login_response = LoginResponse.fromJson(Map.from(standardResponse.data));
+    if (standardResponse.success == true) {
+      isLoggedIn = true;
+      var login_response =
+          LoginResponse.fromJson(Map.from(standardResponse.data));
       var user = new User(
           userName: login_response.username,
           emailAddress: login_response.emailAddress,
           refreshToken: login_response.refreshToken?.token ?? "");
       updateSharedUserPreferences(user);
-      UserData = user;
+      userData = user;
     }
-    isProcessing = false;
+    else{
+      throw Exception(standardResponse.message);
+    }
   }
 
-  void getAccessToken() async {
-    isProcessing = true;
+  Future getAccessToken() async {
     var uri = API_ENDPOINT + "user/get-new-tokens";
     CommonService commonService = await CommonService.getInstance();
     var response = await commonService.post(url: uri);
-    isProcessing = false;
+    var standardResponse = StandardResponse.fromJson(
+        Map<String, dynamic>.from(jsonDecode(response.toString())));
+    if(standardResponse.success == true){
+      isLoggedIn = true;
+      var login_response =
+      LoginResponse.fromJson(Map.from(standardResponse.data));
+      var user = new User(
+          userName: login_response.username,
+          emailAddress: login_response.emailAddress,
+          refreshToken: login_response.refreshToken?.token ?? "");
+      updateSharedUserPreferences(user);
+      userData = user;
+    }
+    else{
+      print("Login failed");
+    }
   }
 
   void setup() async {
@@ -107,8 +120,10 @@ class AuthProvider with ChangeNotifier {
     String? emailAddress = prefs.getString(EMAILADDRESS_KEY);
     String? refreshToken = prefs.getString(REFRESHTOKEN_KEY);
     if (username != null && emailAddress != null) {
-      UserData = User(userName: username, emailAddress: emailAddress,refreshToken: refreshToken);
+      userData = User(
+          userName: username,
+          emailAddress: emailAddress,
+          refreshToken: refreshToken);
     }
-
   }
 }

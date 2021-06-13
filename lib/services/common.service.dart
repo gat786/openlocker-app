@@ -25,7 +25,7 @@ class CommonService {
     return service;
   }
 
-  Future<Object?> get({required String url, Map<String, String>? headers }) async {
+  Future<dynamic> get({required String url, Map<String, String>? headers }) async {
     try {
       var response = await dio.get(url);
       return response;
@@ -35,7 +35,7 @@ class CommonService {
     }
   }
 
-  Future<Object?> post({required String url, Map<String, String>? headers, dynamic body}) async {
+  Future<dynamic> post({required String url, Map<String, String>? headers, dynamic body}) async {
     try {
       var response =
       await dio.post(url, data: body, options: Options(headers: headers));
@@ -46,7 +46,7 @@ class CommonService {
     }
   }
 
-  Object? put({required String url, Map<String, String>? headers, dynamic body}) async {
+  Future<dynamic> put({required String url, Map<String, String>? headers, dynamic body}) async {
     try {
       var response = await dio.put(
           url, options: Options(headers: headers), data: body);

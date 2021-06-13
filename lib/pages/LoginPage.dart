@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/helpers/validators.dart';
 import 'package:open_locker_app/provider/auth.dart';
+import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider provider = Provider.of<AuthProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context);
     return Scaffold(
       body: Material(
         child: Container(
@@ -83,13 +85,18 @@ class _LoginPageState extends State<LoginPage> {
                           height: 16,
                         ),
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
                             print("Validating");
                             if (_loginFormKey.currentState!.validate()) {
                               // validation successful
-                              provider.loginUser(
+                              loadingProvider.isLoading = true;
+                              await authProvider.loginUser(
                                   userName: userNameController.text,
                                   password: passwordController.text);
+                              loadingProvider.isLoading = false;
+                            }
+                            if(authProvider.isLoggedIn){
+                              Navigator.popAndPushNamed(context, Routes.DrivePage);
                             }
                           },
                           child: Container(

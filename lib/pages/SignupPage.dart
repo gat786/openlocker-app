@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/helpers/validators.dart';
 import 'package:open_locker_app/provider/auth.dart';
+import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
@@ -21,10 +22,15 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider provider = Provider.of<AuthProvider>(context);
-    if(provider.UserData.refreshToken != null){
-      provider.getAccessToken();
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context);
+    if(authProvider.userData.refreshToken != null){
+      authProvider.getAccessToken();
     }
+    if(authProvider.isLoggedIn){
+      Navigator.popAndPushNamed(context, Routes.DrivePage);
+    }
+
     return Scaffold(
       body: Material(
         child: Container(
@@ -108,10 +114,15 @@ class _SignupPageState extends State<SignupPage> {
                             print("Validating");
                             if (_signupFormKey.currentState!.validate()) {
                               // validation successful
-                              provider.signupUser(
+                              loadingProvider.isLoading = true;
+                              authProvider.signupUser(
                                   userName: userNameController.text,
                                   emailAddress: emailAddressController.text,
                                   password: passwordController.text);
+                              loadingProvider.isLoading = false;
+                              if(authProvider.isLoggedIn){
+                                Navigator.popAndPushNamed(context, Routes.DrivePage);
+                              }
                             }
                           },
                           child: Container(

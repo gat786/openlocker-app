@@ -7,12 +7,14 @@ class LoadingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LoadingProvider _loadingProvider = Provider.of<LoadingProvider>(context);
-    return (_loadingProvider.isLoading) ? Container(
-        color: Colors.black.withOpacity(0.3),
-        child: Center(
-            child: CircularProgressIndicator(
-          strokeWidth: 4,
-        ))) : Container();
+    return Consumer<LoadingProvider>(
+      builder: (_, loadingProvider, __) => loadingProvider.isLoading ? Container(
+          color: Colors.black.withOpacity(0.3),
+          child: Center(
+              child: CircularProgressIndicator(
+            strokeWidth: 4,
+          ))) : Container(),
+    );
+    Container();
   }
 }
