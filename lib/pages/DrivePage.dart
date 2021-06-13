@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/helpers/routes.dart';
+import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/auth.dart';
+import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:provider/provider.dart';
 
 class DrivePage extends StatefulWidget {
@@ -36,14 +39,12 @@ class _DrivePageState extends State<DrivePage> {
     return Scaffold(
       body: PageView(
         children: [
+          DriveHomePage(),
+
           Center(
             child: Container(
               child: Text("Page 1"),
             ),
-          ),
-
-          Container(
-            child: Text("Page 1"),
           ),
 
           AccountPage()
@@ -111,3 +112,36 @@ class AccountPage extends StatelessWidget {
   }
 }
 
+class DriveHomePage extends StatefulWidget {
+  const DriveHomePage({Key? key}) : super(key: key);
+
+  @override
+  _DriveHomePageState createState() => _DriveHomePageState();
+}
+
+class _DriveHomePageState extends State<DriveHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    FileProvider fileProvider = Provider.of<FileProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    try{
+      fileProvider.getFlatFiles(authProvider.accessToken);
+    } on TokenExpiredException {
+      authProvider.getAccessToken();
+    }
+
+    Iterable<Widget> files = fileProvider.flatFiles.map<Widget>((File element) {
+      return ListTile(
+        title: Text(element.fileNameWithoutPrefix()),
+        trailing: Icon(Icons.more_vert),
+      );
+    });
+
+    return Scaffold(
+      appBar: AppBar(title: Text("All Files"),automaticallyImplyLeading: false),
+      body: Column(
+        children: files.toList(),
+      ),
+    );
+  }
+}

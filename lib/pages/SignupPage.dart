@@ -113,12 +113,12 @@ class _SignupPageState extends State<SignupPage> {
                           height: 16,
                         ),
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
                             print("Validating");
                             if (_signupFormKey.currentState!.validate()) {
                               // validation successful
                               loadingProvider.isLoading = true;
-                              authProvider.signupUser(
+                              await authProvider.signupUser(
                                   userName: userNameController.text,
                                   emailAddress: emailAddressController.text,
                                   password: passwordController.text);

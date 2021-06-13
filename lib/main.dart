@@ -1,27 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:json_theme/json_theme.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/provider/auth.dart';
+import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:open_locker_app/widgets/Loader.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final themeStr = await rootBundle.loadString('assets/flutter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
-
-  runApp(MyApp(theme: theme));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final ThemeData theme;
 
-  MyApp({required final this.theme});
+
+  MyApp();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +24,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
         ChangeNotifierProvider<LoadingProvider>(
           create: (_) => LoadingProvider(),
-        )
+        ),
+        ChangeNotifierProvider<FileProvider>(create: (_) => FileProvider(),),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -40,7 +35,9 @@ class MyApp extends StatelessWidget {
             onGenerateRoute: (settings) =>
                 RoutesGenerator.generateRoute(settings),
             initialRoute: Routes.SignupPage,
-            theme: theme,
+            theme: ThemeData(
+              primaryColor: Color.fromRGBO(0, 26, 255, 1)
+            ),
           ),
           LoadingOverlay()
         ]),

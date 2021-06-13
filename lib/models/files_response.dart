@@ -1,6 +1,6 @@
 class FilesResponse {
   List<String>? folderPrefix;
-  List<Files>? files;
+  List<File>? files;
 
   FilesResponse({this.folderPrefix, this.files});
 
@@ -9,7 +9,7 @@ class FilesResponse {
     if (json['files'] != null) {
       files = new List.empty();
       json['files'].forEach((v) {
-        files?.add(new Files.fromJson(v));
+        files?.add(new File.fromJson(v));
       });
     }
   }
@@ -24,21 +24,42 @@ class FilesResponse {
   }
 }
 
-class Files {
+class FlatFilesResponse {
+  List<File> files = List.empty(growable: true);
+
+  FlatFilesResponse({required this.files});
+
+  FlatFilesResponse.fromJson(List<dynamic> json){
+    json.forEach((value) {
+      File file = new File();
+       file.fileName = value['fileName'];
+       file.createdOn = value['createdOn'];
+       file.contentType = value['contentType'];
+       file.contentLength = value['contentLength'];
+       file.lastModified = value['lastModified'];
+       files.add(file);
+    });
+  }
+}
+
+class File {
   String? fileName;
   String? lastModified;
   int? contentLength;
   String? contentType;
   String? createdOn;
+  String fileNameWithoutPrefix() {
+    return this.fileName!.split('/').last;
+  }
 
-  Files(
+  File(
       {this.fileName,
         this.lastModified,
         this.contentLength,
         this.contentType,
         this.createdOn});
 
-  Files.fromJson(Map<String, dynamic> json) {
+  File.fromJson(Map<String, dynamic> json) {
     fileName = json['fileName'];
     lastModified = json['lastModified'];
     contentLength = json['contentLength'];

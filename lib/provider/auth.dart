@@ -35,6 +35,10 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  set accessToken(String newToken) {
+    _accessToken = newToken;
+  }
+
   Future logoutUser() async {
     await deleteSharedUserPreferences();
     isLoggedIn = false;
@@ -59,6 +63,7 @@ class AuthProvider with ChangeNotifier {
           refreshToken: login_response.refreshToken?.token ?? "");
       updateSharedUserPreferences(user);
       userData = user;
+      accessToken = login_response.accessToken ?? "";
     }
     else{
       throw Exception(standardResponse.message);
@@ -91,6 +96,7 @@ class AuthProvider with ChangeNotifier {
           refreshToken: login_response.refreshToken?.token ?? "");
       updateSharedUserPreferences(user);
       userData = user;
+      accessToken = login_response.accessToken ?? "";
     }
     else{
       throw Exception(standardResponse.message);
@@ -113,6 +119,7 @@ class AuthProvider with ChangeNotifier {
           refreshToken: login_response.refreshToken?.token ?? "");
       updateSharedUserPreferences(user);
       userData = user;
+      accessToken = login_response.accessToken ?? "";
     }
     else{
       print("Login failed");

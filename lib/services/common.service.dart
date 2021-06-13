@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:open_locker_app/constants.dart';
+import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CommonService {
@@ -25,13 +27,17 @@ class CommonService {
     return service;
   }
 
-  Future<dynamic> get({required String url, Map<String, String>? headers }) async {
+  Future<dynamic> get({required String url, Map<String, String> headers = const {}}) async {
     try {
-      var response = await dio.get(url);
+      var response = await dio.get(url, options: Options(headers: headers));
       return response;
     } on DioError catch (err) {
+      print(err.response?.statusCode);
       print(err.response?.data);
       print(err.response?.headers);
+      if(err.response?.statusCode == 401){
+        throw TokenExpiredException();
+      }
     }
   }
 
@@ -43,6 +49,9 @@ class CommonService {
     } on DioError catch (err) {
       print(err.response?.data);
       print(err.response?.headers);
+      if(err.response?.statusCode == 401){
+        throw TokenExpiredException();
+      }
     }
   }
 
@@ -54,6 +63,9 @@ class CommonService {
     } on DioError catch (err) {
       print(err.response?.data);
       print(err.response?.headers);
+      if(err.response?.statusCode == 401){
+        throw TokenExpiredException();
+      }
     }
   }
 }
