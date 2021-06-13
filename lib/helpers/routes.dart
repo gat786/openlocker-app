@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:open_locker_app/pages/DrivePage.dart';
 import 'package:open_locker_app/pages/LoginPage.dart';
 import 'package:open_locker_app/pages/SignupPage.dart';
 
@@ -19,7 +20,7 @@ class RoutesGenerator{
       case Routes.SignupPage:
         return MaterialPageRoute(builder: (_) => SignupPage());
       default:
-        return MaterialPageRoute(builder: (_) => SignupPage());
+        return MaterialPageRoute(builder: (_) => DrivePage());
     }
   }
 }

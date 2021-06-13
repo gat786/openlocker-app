@@ -28,9 +28,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
-        ChangeNotifierProxyProvider<AuthProvider, LoadingProvider>(
+        ChangeNotifierProvider<LoadingProvider>(
           create: (_) => LoadingProvider(),
-          update: (_, authProvider, lastLoadingProvider) { lastLoadingProvider?.isLoading = authProvider.isProcessing; },
         )
       ],
       child: MaterialApp(
@@ -43,7 +42,6 @@ class MyApp extends StatelessWidget {
             initialRoute: Routes.SignupPage,
             theme: theme,
           ),
-
           LoadingOverlay()
         ]),
       ),
