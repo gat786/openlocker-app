@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/helpers/validators.dart';
 import 'package:open_locker_app/provider/auth.dart';
@@ -28,7 +29,9 @@ class _SignupPageState extends State<SignupPage> {
       authProvider.getAccessToken();
     }
     if(authProvider.isLoggedIn){
-      Navigator.popAndPushNamed(context, Routes.DrivePage);
+      SchedulerBinding.instance!.addPostFrameCallback((_) {
+        Navigator.popAndPushNamed(context, Routes.DrivePage);
+      });
     }
 
     return Scaffold(
