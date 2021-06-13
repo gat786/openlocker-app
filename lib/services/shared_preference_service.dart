@@ -11,9 +11,14 @@ Future<User> getSharedUserPreferences() async {
   return user;
 }
 
-void updateSharedUserPreferences(User updatedUserDetails) async {
+Future updateSharedUserPreferences(User updatedUserDetails) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString(USERNAME_KEY, updatedUserDetails.userName ?? "");
   prefs.setString(EMAILADDRESS_KEY, updatedUserDetails.emailAddress ?? "");
   prefs.setString(REFRESHTOKEN_KEY, updatedUserDetails.refreshToken ?? "");
+}
+
+Future deleteSharedUserPreferences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.clear();
 }

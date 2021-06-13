@@ -35,6 +35,12 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future logoutUser() async {
+    await deleteSharedUserPreferences();
+    isLoggedIn = false;
+    userData = User();
+  }
+
   Future loginUser({required String userName, required String password}) async {
     var uri = API_ENDPOINT + "user/login";
     var jsonBody = jsonEncode({'username': userName, 'password': password});
