@@ -4,6 +4,7 @@ import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/models/media_type.dart';
+import 'package:open_locker_app/pages/files_page.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/widgets/selectable_chip.dart';
@@ -34,6 +35,21 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     if(!authProvider.isLoggedIn){
@@ -46,11 +62,7 @@ class _DrivePageState extends State<DrivePage> {
         children: [
           DriveHomePage(),
 
-          Center(
-            child: Container(
-              child: Text("Page 1"),
-            ),
-          ),
+          DriveFiesPage(),
 
           AccountPage()
         ],

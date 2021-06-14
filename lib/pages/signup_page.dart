@@ -23,18 +23,23 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context);
-    if(authProvider.userData.refreshToken != null && authProvider.userData.refreshToken != ""){
-      loadingProvider.isLoading = true;
-      authProvider.getAccessToken();
-      loadingProvider.isLoading = false;
+    AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
+    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
+
+    getData() async {
+      if(authProvider.userData.refreshToken != null && authProvider.userData.refreshToken != ""){
+        loadingProvider.isLoading = true;
+        await authProvider.getAccessToken();
+        loadingProvider.isLoading = false;
+      }
+      if(authProvider.isLoggedIn){
+        SchedulerBinding.instance!.addPostFrameCallback((_) {
+          Navigator.pushNamed(context, Routes.DrivePage);
+        });
+      }
     }
-    if(authProvider.isLoggedIn){
-      SchedulerBinding.instance!.addPostFrameCallback((_) {
-        Navigator.popAndPushNamed(context, Routes.DrivePage);
-      });
-    }
+
+    getData();
 
     return Scaffold(
       body: Material(

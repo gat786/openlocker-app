@@ -9,39 +9,36 @@ import 'package:open_locker_app/widgets/Loader.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+    ChangeNotifierProvider<LoadingProvider>(
+      create: (_) => LoadingProvider(),
+    ),
+    ChangeNotifierProxyProvider<AuthProvider, FileProvider>(
+      create: (_) => FileProvider(),
+      update: (_, updatedAuthProvider, currentFileProvider) =>
+          FileProvider(authProvider: updatedAuthProvider),
+    ),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-
-
   MyApp();
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
-        ChangeNotifierProvider<LoadingProvider>(
-          create: (_) => LoadingProvider(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Stack(children: [
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          onGenerateRoute: (settings) =>
+              RoutesGenerator.generateRoute(settings),
+          initialRoute: Routes.SignupPage,
+          theme: ThemeData(primaryColor: Color.fromRGBO(0, 26, 255, 1)),
         ),
-        ChangeNotifierProvider<FileProvider>(create: (_) => FileProvider(),),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Stack(children: [
-          MaterialApp(
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: (settings) =>
-                RoutesGenerator.generateRoute(settings),
-            initialRoute: Routes.SignupPage,
-            theme: ThemeData(
-              primaryColor: Color.fromRGBO(0, 26, 255, 1)
-            ),
-          ),
-          LoadingOverlay()
-        ]),
-      ),
+        LoadingOverlay()
+      ]),
     );
   }
 }

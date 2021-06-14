@@ -40,7 +40,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
     getFiles() async {
       try{
         if(authProvider.isLoggedIn) {
-          await fileProvider.getFlatFiles(authProvider.accessToken);
+          await fileProvider.getFlatFiles();
         }
       } on TokenExpiredException {
         await authProvider.getAccessToken();

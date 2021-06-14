@@ -7,7 +7,7 @@ class FilesResponse {
   FilesResponse.fromJson(Map<String, dynamic> json) {
     folderPrefix = json['folderPrefix'].cast<String>();
     if (json['files'] != null) {
-      files = new List.empty();
+      files = new List.empty(growable: true);
       json['files'].forEach((v) {
         files?.add(new File.fromJson(v));
       });
