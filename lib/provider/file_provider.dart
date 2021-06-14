@@ -78,7 +78,6 @@ class FileProvider with ChangeNotifier {
         var standardResponse = StandardResponse.fromJson(
             Map.from(jsonDecode(response.toString())));
         if (standardResponse.success == true) {
-          print(standardResponse.data);
           return standardResponse.data as String;
         }
       }
@@ -103,7 +102,6 @@ class FileProvider with ChangeNotifier {
         var standardResponse = StandardResponse.fromJson(
             Map.from(jsonDecode(response.toString())));
         if (standardResponse.success == true) {
-          print(standardResponse.data);
           return standardResponse.data as String;
         }
       }
