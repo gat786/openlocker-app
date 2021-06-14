@@ -13,7 +13,6 @@ class FileListTile extends StatefulWidget {
 }
 
 enum FileOptions { download, delete, preview, details }
-enum FolderOptions { details, delete }
 
 class _FileListTileState extends State<FileListTile> {
 
