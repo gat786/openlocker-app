@@ -4,6 +4,7 @@ import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/models/media_type.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:open_locker_app/widgets/file_list_tile.dart';
 import 'package:open_locker_app/widgets/selectable_chip.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +40,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
     getFiles() async {
       try{
-        if(authProvider.isLoggedIn) {
+        if(authProvider.isLoggedIn && fileProvider.flatFiles.length == 0) {
           await fileProvider.getFlatFiles();
         }
       } on TokenExpiredException {
@@ -47,15 +48,13 @@ class _DriveHomePageState extends State<DriveHomePage> {
       }
     }
 
+    print("rendered");
+
     getFiles();
 
     Iterable<Widget> files = fileProvider.flatFiles.map<Widget>((File element) {
-      return ListTile(
-        title: Text(element.fileNameWithoutPrefix()),
-        trailing: Icon(Icons.more_vert),
-      );
+        return FileListTile(file: element);
     });
-
 
     return Scaffold(
       appBar: AppBar(title: Text("All Files"),automaticallyImplyLeading: false),
@@ -98,7 +97,13 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
             Divider(thickness: 2,),
 
-            ...files.toList()
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: files.toList(),
+                ),
+              ),
+            )
           ],
         ),
       ),

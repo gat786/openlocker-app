@@ -5,7 +5,7 @@ import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
-import 'package:open_locker_app/widgets/Loader.dart';
+import 'package:open_locker_app/widgets/loader.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

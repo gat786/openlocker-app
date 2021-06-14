@@ -55,6 +55,30 @@ class FileProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> getDownloadUri({required String fileName}) async {
+    try {
+      var url = API_ENDPOINT + "blob/download";
+      var headers = {
+        "Authorization": "Bearer ${this.authProvider?.accessToken}",
+        Headers.contentLengthHeader: ContentType.json.mimeType
+      };
+      var body = {"filename": fileName};
+      _commonService = await CommonService.getInstance();
+      var response = await _commonService.post(
+          url: url, headers: headers, body: jsonEncode(body));
+
+      if (response != null && response.toString().isNotEmpty) {
+        var standardResponse = StandardResponse.fromJson(
+            Map.from(jsonDecode(response.toString())));
+        if (standardResponse.success == true) {
+          return standardResponse.data as String;
+        }
+      }
+    } on TokenExpiredException {
+      await authProvider?.getAccessToken();
+    }
+  }
+
   Future getHierarchicalFiles({prefix = ""}) async {
     try {
       var url = API_ENDPOINT + "blob";
