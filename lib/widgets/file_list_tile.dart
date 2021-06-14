@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:open_locker_app/models/files_response.dart';
+import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:provider/provider.dart';
 
 class FileListTile extends StatefulWidget {
   final File file;
@@ -14,15 +16,38 @@ enum FileOptions { download, delete, preview, details }
 enum FolderOptions { details, delete }
 
 class _FileListTileState extends State<FileListTile> {
+
+  downloadTask({required String downloadUrl}){
+
+  }
   
   FileOptions _selection = FileOptions.download;
   
   @override
   Widget build(BuildContext context) {
+    FileProvider fileProvider = Provider.of<FileProvider>(context);
+
+    changeFileOption(FileOptions optionSelected) async {
+      switch(optionSelected){
+        case FileOptions.delete:
+          break;
+        case FileOptions.details:
+          break;
+        case FileOptions.download:
+          String? downloadUrl = await fileProvider.getDownloadUri(fileName: widget.file.fileName!);
+          if(downloadUrl != null){
+            downloadTask(downloadUrl: downloadUrl);
+          }
+          break;
+        case FileOptions.preview:
+          break;
+      }
+    }
+
     return ListTile(
       title: Text(widget.file.fileNameWithoutPrefix()),
       trailing: PopupMenuButton<FileOptions>(
-        onSelected: (FileOptions result) { setState(() { _selection = result; }); },
+        onSelected: changeFileOption,
         itemBuilder: (BuildContext context) => <PopupMenuEntry<FileOptions>>[
           const PopupMenuItem<FileOptions>(
             value: FileOptions.download,

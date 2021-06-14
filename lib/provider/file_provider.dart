@@ -78,6 +78,7 @@ class FileProvider with ChangeNotifier {
         var standardResponse = StandardResponse.fromJson(
             Map.from(jsonDecode(response.toString())));
         if (standardResponse.success == true) {
+          print(standardResponse.data);
           return standardResponse.data as String;
         }
       }
@@ -85,6 +86,57 @@ class FileProvider with ChangeNotifier {
       await authProvider?.getAccessToken();
     }
   }
+
+  Future<String?> getUploadUri({required String fileName}) async {
+    try {
+      var url = API_ENDPOINT + "blob/upload";
+      var headers = {
+        "Authorization": "Bearer ${this.authProvider?.accessToken}",
+        Headers.contentLengthHeader: ContentType.json.mimeType
+      };
+      var body = {"filename": fileName};
+      _commonService = await CommonService.getInstance();
+      var response = await _commonService.post(
+          url: url, headers: headers, body: jsonEncode(body));
+
+      if (response != null && response.toString().isNotEmpty) {
+        var standardResponse = StandardResponse.fromJson(
+            Map.from(jsonDecode(response.toString())));
+        if (standardResponse.success == true) {
+          print(standardResponse.data);
+          return standardResponse.data as String;
+        }
+      }
+    } on TokenExpiredException {
+      await authProvider?.getAccessToken();
+    }
+  }
+
+  Future deleteFile(String fileName) async {
+    try {
+      var url = API_ENDPOINT + "blob/delete";
+      var headers = {
+        "Authorization": "Bearer ${this.authProvider?.accessToken}",
+        Headers.contentLengthHeader: ContentType.json.mimeType
+      };
+      var body = {"filename": fileName };
+      _commonService = await CommonService.getInstance();
+      var response = await _commonService.post(
+          url: url, headers: headers, body: jsonEncode(body));
+
+      if (response != null && response.toString().isNotEmpty) {
+        var standardResponse = StandardResponse.fromJson(
+            Map.from(jsonDecode(response.toString())));
+        if (standardResponse.success == true) {
+          return standardResponse.data as String;
+        }
+      }
+    } on TokenExpiredException {
+      await authProvider?.getAccessToken();
+    }
+  }
+
+
 
   Future getHierarchicalFiles({prefix = ""}) async {
     try {

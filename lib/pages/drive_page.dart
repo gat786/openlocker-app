@@ -4,13 +4,13 @@ import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/models/media_type.dart';
-import 'package:open_locker_app/pages/files_page.dart';
+import 'package:open_locker_app/pages/drive_files_page.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/widgets/selectable_chip.dart';
 import 'package:provider/provider.dart';
 
-import 'account_page.dart';
+import 'drive_account_page.dart';
 import 'drive_home_page.dart';
 
 class DrivePage extends StatefulWidget {
