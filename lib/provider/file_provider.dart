@@ -30,6 +30,13 @@ class FileProvider with ChangeNotifier {
 
   List<File> get flatFiles => _flatFiles;
 
+  List<File> flatFilesByFilter({String discreteMimeType = ""}){
+    if(discreteMimeType != "")
+      return _flatFiles.where((element) => element.contentType?.startsWith(discreteMimeType) ?? false).toList();
+    else
+      return _flatFiles;
+  }
+
   set flatFiles(dynamic newFiles) {
     _flatFiles = newFiles;
     notifyListeners();

@@ -8,7 +8,6 @@ import 'package:open_locker_app/widgets/file_list_tile.dart';
 import 'package:open_locker_app/widgets/selectable_chip.dart';
 import 'package:provider/provider.dart';
 
-
 class DriveHomePage extends StatefulWidget {
   const DriveHomePage({Key? key}) : super(key: key);
 
@@ -17,17 +16,20 @@ class DriveHomePage extends StatefulWidget {
 }
 
 class _DriveHomePageState extends State<DriveHomePage> {
-
   int selectedFileTypeIndex = -1;
 
   var MediaTypes = [
-    MediaType(title: "Image", icon: Icon(Icons.image)),
-    MediaType(title: "Music", icon: Icon(Icons.music_note)),
-    MediaType(title: "Documents", icon: Icon(Icons.picture_as_pdf)),
-    MediaType(title: "Videos", icon: Icon(Icons.videocam_sharp)),
+    MediaType(title: "Image", icon: Icon(Icons.image), mimeType: 'image'),
+    MediaType(title: "Music", icon: Icon(Icons.music_note), mimeType: 'audio'),
+    MediaType(
+        title: "Documents",
+        icon: Icon(Icons.picture_as_pdf),
+        mimeType: 'application/pdf'),
+    MediaType(
+        title: "Videos", icon: Icon(Icons.videocam_sharp), mimeType: 'video'),
   ];
 
-  changeSelectedMediaType(int selectedIndex){
+  changeSelectedMediaType(int selectedIndex) {
     setState(() {
       selectedFileTypeIndex = selectedIndex;
     });
@@ -39,8 +41,8 @@ class _DriveHomePageState extends State<DriveHomePage> {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     getFiles() async {
-      try{
-        if(authProvider.isLoggedIn && fileProvider.flatFiles.length == 0) {
+      try {
+        if (authProvider.isLoggedIn && fileProvider.flatFiles.length == 0) {
           await fileProvider.getFlatFiles();
         }
       } on TokenExpiredException {
@@ -52,12 +54,18 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
     getFiles();
 
-    Iterable<Widget> files = fileProvider.flatFiles.map<Widget>((File element) {
-        return FileListTile(file: element);
+    Iterable<Widget> files = fileProvider
+        .flatFilesByFilter(
+            discreteMimeType: selectedFileTypeIndex != -1
+                ? MediaTypes[selectedFileTypeIndex].mimeType
+                : "")
+        .map<Widget>((File element) {
+      return FileListTile(file: element);
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text("All Files"),automaticallyImplyLeading: false),
+      appBar:
+          AppBar(title: Text("All Files"), automaticallyImplyLeading: false),
       body: Container(
         width: MediaQuery.of(context).size.width,
         child: Column(
@@ -71,32 +79,39 @@ class _DriveHomePageState extends State<DriveHomePage> {
                       icon: MediaTypes[0].icon,
                       title: MediaTypes[0].title,
                       isSelected: 0 == selectedFileTypeIndex,
-                      callback:(){ changeSelectedMediaType(0);},
+                      callback: () {
+                        changeSelectedMediaType(0);
+                      },
                     ),
                     SelectableChip(
                       icon: MediaTypes[1].icon,
                       title: MediaTypes[1].title,
                       isSelected: 1 == selectedFileTypeIndex,
-                      callback:(){ changeSelectedMediaType(1);},
+                      callback: () {
+                        changeSelectedMediaType(1);
+                      },
                     ),
                     SelectableChip(
                       icon: MediaTypes[2].icon,
                       title: MediaTypes[2].title,
                       isSelected: 2 == selectedFileTypeIndex,
-                      callback:(){ changeSelectedMediaType(2);},
+                      callback: () {
+                        changeSelectedMediaType(2);
+                      },
                     ),
                     SelectableChip(
                       icon: MediaTypes[3].icon,
                       title: MediaTypes[3].title,
                       isSelected: 3 == selectedFileTypeIndex,
-                      callback:(){ changeSelectedMediaType(3);},
+                      callback: () {
+                        changeSelectedMediaType(3);
+                      },
                     ),
                   ],
-                )
+                )),
+            Divider(
+              thickness: 2,
             ),
-
-            Divider(thickness: 2,),
-
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
