@@ -1,3 +1,6 @@
+import 'dart:io' as io;
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
@@ -43,7 +46,15 @@ class _DriveFiesPageState extends State<DriveFiesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.upload_file),
-        onPressed: () {},
+        onPressed: () async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+          if(result != null) {
+            io.File file = io.File(result.files.single.path!);
+          } else {
+            // User canceled the picker
+          }
+        },
       ),
     );
   }

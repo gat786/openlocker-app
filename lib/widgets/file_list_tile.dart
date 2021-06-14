@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class FileListTile extends StatefulWidget {
@@ -16,12 +18,16 @@ enum FileOptions { download, delete, preview, details }
 
 class _FileListTileState extends State<FileListTile> {
 
-  downloadTask({required String downloadUrl}){
-
+  downloadTask({required String downloadUrl}) async {
+    if(await Permission.storage.request().isGranted){
+      Fluttertoast.showToast(msg: "Saving the file");
+    }else{
+      Fluttertoast.showToast(msg: "Permission to write file was declined");
+    }
   }
-  
+
   FileOptions _selection = FileOptions.download;
-  
+
   @override
   Widget build(BuildContext context) {
     FileProvider fileProvider = Provider.of<FileProvider>(context);
