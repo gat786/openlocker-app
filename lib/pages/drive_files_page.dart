@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:open_locker_app/widgets/file_list_tile.dart';
+import 'package:open_locker_app/widgets/folder_list_tile.dart';
 import 'package:provider/provider.dart';
 
 class DriveFiesPage extends StatefulWidget {
@@ -11,20 +13,23 @@ class DriveFiesPage extends StatefulWidget {
 }
 
 class _DriveFiesPageState extends State<DriveFiesPage> {
-
   @override
   Widget build(BuildContext context) {
     FileProvider filesProvider = Provider.of<FileProvider>(context);
 
     Future getData() async {
-      if(filesProvider.hierarchicalFiles == null){
+      if (filesProvider.hierarchicalFiles == null) {
         await filesProvider.getHierarchicalFiles();
       }
     }
 
     getData();
 
+    var folderTiles = filesProvider.hierarchicalFiles?.folderPrefix
+        ?.map<Widget>((e) => FolderListTile(folderName: e));
 
+    var fileTiles = filesProvider.hierarchicalFiles?.files
+        ?.map((e) => FileListTile(file: e));
 
     return Scaffold(
       appBar: AppBar(
@@ -33,9 +38,7 @@ class _DriveFiesPageState extends State<DriveFiesPage> {
       ),
       body: Container(
         child: Column(
-          children: [
-
-          ],
+          children: folderTiles?.followedBy(fileTiles?.toList() ?? []).toList() ?? [],
         ),
       ),
       floatingActionButton: FloatingActionButton(
