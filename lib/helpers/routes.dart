@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:open_locker_app/pages/DrivePage.dart';
-import 'package:open_locker_app/pages/LoginPage.dart';
-import 'package:open_locker_app/pages/SignupPage.dart';
+import 'package:open_locker_app/pages/drive_page.dart';
+import 'package:open_locker_app/pages/login_page.dart';
+import 'package:open_locker_app/pages/signup_page.dart';
 
 class Routes{
   static const String LoginPage = "/login";
