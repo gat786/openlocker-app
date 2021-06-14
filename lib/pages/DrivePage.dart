@@ -35,7 +35,7 @@ class _DrivePageState extends State<DrivePage> {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     if(!authProvider.isLoggedIn){
       SchedulerBinding.instance!.addPostFrameCallback((_) {
-        Navigator.popAndPushNamed(context, Routes.SignupPage);
+        Navigator.pushReplacementNamed(context, Routes.SignupPage);
       });
     }
     return Scaffold(
@@ -123,6 +123,8 @@ class DriveHomePage extends StatefulWidget {
 
 class _DriveHomePageState extends State<DriveHomePage> {
 
+  int selectedFileTypeIndex = -1;
+
   var MediaTypes = [
     MediaType(title: "Image", icon: Icon(Icons.image)),
     MediaType(title: "Music", icon: Icon(Icons.music_note)),
@@ -132,14 +134,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
   changeSelectedMediaType(int selectedIndex){
     setState(() {
-      MediaTypes.asMap().forEach((key, value) {
-        if(key == selectedIndex){
-          value.isSelected = true;
-        }
-        else{
-          value.isSelected = false;
-        }
-      });
+      selectedFileTypeIndex = selectedIndex;
     });
   }
 
@@ -150,7 +145,9 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
     getFiles() async {
       try{
-        await fileProvider.getFlatFiles(authProvider.accessToken);
+        if(authProvider.isLoggedIn) {
+          await fileProvider.getFlatFiles(authProvider.accessToken);
+        }
       } on TokenExpiredException {
         await authProvider.getAccessToken();
       }
@@ -180,25 +177,25 @@ class _DriveHomePageState extends State<DriveHomePage> {
                   SelectableChip(
                     icon: MediaTypes[0].icon,
                     title: MediaTypes[0].title,
-                    isSelected: MediaTypes[0].isSelected,
+                    isSelected: 0 == selectedFileTypeIndex,
                     callback:(){ changeSelectedMediaType(0);},
                   ),
                   SelectableChip(
                       icon: MediaTypes[1].icon,
                       title: MediaTypes[1].title,
-                    isSelected: MediaTypes[1].isSelected,
+                    isSelected: 1 == selectedFileTypeIndex,
                     callback:(){ changeSelectedMediaType(1);},
                   ),
                   SelectableChip(
                       icon: MediaTypes[2].icon,
                       title: MediaTypes[2].title,
-                    isSelected: MediaTypes[2].isSelected,
+                    isSelected: 2 == selectedFileTypeIndex,
                     callback:(){ changeSelectedMediaType(2);},
                   ),
                   SelectableChip(
                       icon: MediaTypes[3].icon,
                       title: MediaTypes[3].title,
-                    isSelected: MediaTypes[3].isSelected,
+                    isSelected: 3 == selectedFileTypeIndex,
                     callback:(){ changeSelectedMediaType(3);},
                   ),
                 ],

@@ -15,7 +15,7 @@ class CommonService {
   late CookieManager cookieManager;
   late CookieJar cookieJar;
 
-  static getInstance() async{
+  static Future getInstance() async{
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     CommonService service = new CommonService();
@@ -25,6 +25,14 @@ class CommonService {
     service.dio.interceptors.add(service.cookieManager);
     service.cookieJar.loadForRequest(Uri.parse(API_ENDPOINT));
     return service;
+  }
+
+  static Future deleteCookies() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    CommonService service = new CommonService();
+    service.cookieJar= PersistCookieJar(ignoreExpires: true, storage: FileStorage(appDocPath +"/.cookies/" ));
+    service.cookieJar.delete(Uri.parse(API_ENDPOINT));
   }
 
   Future<dynamic> get({required String url, Map<String, String> headers = const {}}) async {

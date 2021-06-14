@@ -41,7 +41,9 @@ class AuthProvider with ChangeNotifier {
 
   Future logoutUser() async {
     await deleteSharedUserPreferences();
+    CommonService.deleteCookies();
     isLoggedIn = false;
+    accessToken = "";
     userData = User();
   }
 
@@ -132,7 +134,8 @@ class AuthProvider with ChangeNotifier {
     String? username = prefs.getString(USERNAME_KEY);
     String? emailAddress = prefs.getString(EMAILADDRESS_KEY);
     String? refreshToken = prefs.getString(REFRESHTOKEN_KEY);
-    if (username != null && emailAddress != null) {
+
+    if (username != null && emailAddress != null && refreshToken != null) {
       userData = User(
           userName: username,
           emailAddress: emailAddress,

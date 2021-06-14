@@ -25,8 +25,10 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context);
-    if(authProvider.userData.refreshToken != null){
+    if(authProvider.userData.refreshToken != null && authProvider.userData.refreshToken != ""){
+      loadingProvider.isLoading = true;
       authProvider.getAccessToken();
+      loadingProvider.isLoading = false;
     }
     if(authProvider.isLoggedIn){
       SchedulerBinding.instance!.addPostFrameCallback((_) {
