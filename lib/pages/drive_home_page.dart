@@ -72,8 +72,10 @@ class _DriveHomePageState extends State<DriveHomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-                height: 60,
-                child: Row(
+                height: 50,
+                width: MediaQuery.of(context).size.width,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
                   children: [
                     SelectableChip(
                       icon: MediaTypes[0].icon,
@@ -107,6 +109,12 @@ class _DriveHomePageState extends State<DriveHomePage> {
                         changeSelectedMediaType(3);
                       },
                     ),
+                    SelectableChip(
+                      icon: Icon(Icons.clear),
+                      title: "Clear",
+                      callback: () {
+                        changeSelectedMediaType(-1);
+                      })
                   ],
                 )),
             Divider(
