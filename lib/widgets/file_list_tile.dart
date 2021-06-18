@@ -5,6 +5,7 @@ import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FileListTile extends StatefulWidget {
   final File file;
@@ -24,9 +25,12 @@ class _FileListTileState extends State<FileListTile> {
   downloadTask({required String downloadUrl, required String fileName}) async {
     if(await Permission.storage.request().isGranted){
       if(fileProvider != null){
-        loadingProvider!.isLoading = true;
-        await fileProvider!.downloadFile(downloadUrl, filename: fileName);
-        loadingProvider!.isLoading = false;
+        // loadingProvider!.isLoading = true;
+        if(await canLaunch(downloadUrl)){
+          await launch(downloadUrl);
+        }
+        // await fileProvider!.downloadFile(downloadUrl, filename: fileName);
+        // loadingProvider!.isLoading = false;
       }
       Fluttertoast.showToast(msg: "Saving the file");
     }else{
@@ -38,6 +42,9 @@ class _FileListTileState extends State<FileListTile> {
   changeFileOption(FileOptions optionSelected) async {
     switch(optionSelected){
       case FileOptions.delete:
+        loadingProvider!.isLoading = true;
+        await fileProvider!.deleteFile(widget.file.fileName!);
+        loadingProvider!.isLoading = false;
         break;
       case FileOptions.details:
         break;

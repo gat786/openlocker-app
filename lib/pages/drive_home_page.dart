@@ -17,6 +17,8 @@ class DriveHomePage extends StatefulWidget {
 
 class _DriveHomePageState extends State<DriveHomePage> {
   int selectedFileTypeIndex = -1;
+  AuthProvider? authProvider;
+  FileProvider? fileProvider;
 
   var MediaTypes = [
     MediaType(title: "Image", icon: Icon(Icons.image), mimeType: 'image'),
@@ -36,44 +38,63 @@ class _DriveHomePageState extends State<DriveHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    FileProvider fileProvider = Provider.of<FileProvider>(context);
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
-
-    getFiles() async {
-      try {
-        if (authProvider.isLoggedIn && fileProvider.flatFiles.length == 0) {
-          await fileProvider.getFlatFiles();
-        }
-      } on TokenExpiredException {
-        await authProvider.getAccessToken();
-      }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (fileProvider != null) {
+      getFiles();
     }
+  }
 
-    print("rendered");
+  getFiles() async {
+    try {
+      if (authProvider!.isLoggedIn && fileProvider!.flatFiles.length == 0) {
+        await fileProvider!.getFlatFiles();
+      }
+    } on TokenExpiredException {
+      await authProvider!.getAccessToken();
+    }
+  }
 
-    getFiles();
+  @override
+  Widget build(BuildContext context) {
+    fileProvider = Provider.of<FileProvider>(context);
+    authProvider = Provider.of<AuthProvider>(context);
 
     Iterable<Widget> files = fileProvider
-        .flatFilesByFilter(
-            discreteMimeType: selectedFileTypeIndex != -1
-                ? MediaTypes[selectedFileTypeIndex].mimeType
-                : "")
+        ?.flatFilesByFilter(
+        discreteMimeType: selectedFileTypeIndex != -1
+            ? MediaTypes[selectedFileTypeIndex].mimeType
+            : "")
         .map<Widget>((File element) {
       return FileListTile(file: element);
-    });
+    }) ??
+        [];
 
     return Scaffold(
       appBar:
-          AppBar(title: Text("All Files"), automaticallyImplyLeading: false),
+      AppBar(
+        title: Text("All Files"),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(onPressed: () {
+            getFiles();
+          }, icon: Icon(Icons.refresh))
+        ],
+      ),
       body: Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
                 height: 50,
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
@@ -110,11 +131,11 @@ class _DriveHomePageState extends State<DriveHomePage> {
                       },
                     ),
                     SelectableChip(
-                      icon: Icon(Icons.clear),
-                      title: "Clear",
-                      callback: () {
-                        changeSelectedMediaType(-1);
-                      })
+                        icon: Icon(Icons.clear),
+                        title: "Clear",
+                        callback: () {
+                          changeSelectedMediaType(-1);
+                        })
                   ],
                 )),
             Divider(

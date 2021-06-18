@@ -14,11 +14,15 @@ import 'package:open_locker_app/services/common.service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileProvider with ChangeNotifier {
+
   late CommonService _commonService;
 
   late AuthProvider? authProvider;
 
-  FileProvider({this.authProvider});
+  FileProvider({this.authProvider}){
+    getFlatFiles();
+    getHierarchicalFiles();
+  }
 
   List<File> _flatFiles = List.empty();
 

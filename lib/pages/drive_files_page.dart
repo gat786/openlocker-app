@@ -22,9 +22,7 @@ class _DriveFilesPageState extends State<DriveFilesPage> {
   LoadingProvider? loadingProvider;
 
   Future getData() async {
-    if (filesProvider!.hierarchicalFiles == null) {
-      await filesProvider!.getHierarchicalFiles();
-    }
+    await filesProvider!.getHierarchicalFiles();
   }
 
   @override
