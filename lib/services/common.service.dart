@@ -35,9 +35,9 @@ class CommonService {
     service.cookieJar.delete(Uri.parse(API_ENDPOINT));
   }
 
-  Future<dynamic> get({required String url, Map<String, String> headers = const {}}) async {
+  Future<dynamic> get({required String url, Map<String, String> headers = const {}, ProgressCallback? downloadProgressCallback}) async {
     try {
-      var response = await dio.get(url, options: Options(headers: headers));
+      var response = await dio.get(url, options: Options(headers: headers),onReceiveProgress: downloadProgressCallback);
       return response;
     } on DioError catch (err) {
       print(err.response?.statusCode);

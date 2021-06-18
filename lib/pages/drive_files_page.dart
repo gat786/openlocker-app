@@ -10,41 +10,60 @@ import 'package:open_locker_app/widgets/file_list_tile.dart';
 import 'package:open_locker_app/widgets/folder_list_tile.dart';
 import 'package:provider/provider.dart';
 
-class DriveFiesPage extends StatefulWidget {
-  const DriveFiesPage({Key? key}) : super(key: key);
+class DriveFilesPage extends StatefulWidget {
+  const DriveFilesPage({Key? key}) : super(key: key);
 
   @override
-  _DriveFiesPageState createState() => _DriveFiesPageState();
+  _DriveFilesPageState createState() => _DriveFilesPageState();
 }
 
-class _DriveFiesPageState extends State<DriveFiesPage> {
+class _DriveFilesPageState extends State<DriveFilesPage> {
+  FileProvider? filesProvider;
+  LoadingProvider? loadingProvider;
+
+  Future getData() async {
+    if (filesProvider!.hierarchicalFiles == null) {
+      await filesProvider!.getHierarchicalFiles();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    if (filesProvider != null) {
+      getData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    FileProvider filesProvider = Provider.of<FileProvider>(context);
-    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context);
+    filesProvider = Provider.of<FileProvider>(context);
+    loadingProvider = Provider.of<LoadingProvider>(context);
 
-    Future getData() async {
-      if (filesProvider.hierarchicalFiles == null) {
-        await filesProvider.getHierarchicalFiles();
-      }
-    }
-
-    getData();
-
-    var folderTiles = filesProvider.hierarchicalFiles?.folderPrefix
+    var folderTiles = filesProvider?.hierarchicalFiles?.folderPrefix
         ?.map<Widget>((e) => FolderListTile(folderName: e));
 
-    var fileTiles = filesProvider.hierarchicalFiles?.files
+    var fileTiles = filesProvider?.hierarchicalFiles?.files
         ?.map((e) => FileListTile(file: e));
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text("Files"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              getData();
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: folderTiles?.followedBy(fileTiles?.toList() ?? []).toList() ?? [],
+          children:
+              folderTiles?.followedBy(fileTiles?.toList() ?? []).toList() ?? [],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -52,16 +71,20 @@ class _DriveFiesPageState extends State<DriveFiesPage> {
         onPressed: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-          if(result != null) {
+          if (result != null) {
             io.File file = io.File(result.files.single.path!);
-            var uploadUrl = await filesProvider.getUploadUri(fileName: result.files.first.name);
+            var uploadUrl = await filesProvider?.getUploadUri(
+                fileName: result.files.first.name);
             // print("Url to upload file is ${uploadUrl}");
-            loadingProvider.isLoading = true;
-            filesProvider.uploadFile(uploadUrl: uploadUrl!, fileToUpload: file, progressCallback: (int count,int total) {
-              if(count.floor() % total.floor() == 0 ){
-                loadingProvider.isLoading = false;
-              }
-            });
+            loadingProvider?.isLoading = true;
+            filesProvider?.uploadFile(
+                uploadUrl: uploadUrl!,
+                fileToUpload: file,
+                progressCallback: (int count, int total) {
+                  if (count.floor() % total.floor() == 0) {
+                    loadingProvider?.isLoading = false;
+                  }
+                });
           } else {
             // User canceled the picker
             Fluttertoast.showToast(msg: "Select a file to upload");

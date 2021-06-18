@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
+import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -17,37 +18,45 @@ class FileListTile extends StatefulWidget {
 enum FileOptions { download, delete, preview, details }
 
 class _FileListTileState extends State<FileListTile> {
+  FileProvider? fileProvider;
+  LoadingProvider? loadingProvider;
 
-  downloadTask({required String downloadUrl}) async {
+  downloadTask({required String downloadUrl, required String fileName}) async {
     if(await Permission.storage.request().isGranted){
+      if(fileProvider != null){
+        loadingProvider!.isLoading = true;
+        await fileProvider!.downloadFile(downloadUrl, filename: fileName);
+        loadingProvider!.isLoading = false;
+      }
       Fluttertoast.showToast(msg: "Saving the file");
     }else{
       Fluttertoast.showToast(msg: "Permission to write file was declined");
     }
   }
 
-  FileOptions _selection = FileOptions.download;
+
+  changeFileOption(FileOptions optionSelected) async {
+    switch(optionSelected){
+      case FileOptions.delete:
+        break;
+      case FileOptions.details:
+        break;
+      case FileOptions.download:
+        String? downloadUrl = await fileProvider!.getDownloadUri(fileName: widget.file.fileName!);
+        if(downloadUrl != null){
+          downloadTask(downloadUrl: downloadUrl,fileName: widget.file.fileName!);
+        }
+        break;
+      case FileOptions.preview:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    FileProvider fileProvider = Provider.of<FileProvider>(context);
+    fileProvider = Provider.of<FileProvider>(context);
+    loadingProvider = Provider.of<LoadingProvider>(context);
 
-    changeFileOption(FileOptions optionSelected) async {
-      switch(optionSelected){
-        case FileOptions.delete:
-          break;
-        case FileOptions.details:
-          break;
-        case FileOptions.download:
-          String? downloadUrl = await fileProvider.getDownloadUri(fileName: widget.file.fileName!);
-          if(downloadUrl != null){
-            downloadTask(downloadUrl: downloadUrl);
-          }
-          break;
-        case FileOptions.preview:
-          break;
-      }
-    }
 
     return ListTile(
       title: Text(widget.file.fileNameWithoutPrefix()),

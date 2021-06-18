@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:open_locker_app/constants.dart';
@@ -9,6 +11,7 @@ import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/models/standard_response.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/services/common.service.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FileProvider with ChangeNotifier {
   late CommonService _commonService;
@@ -101,9 +104,54 @@ class FileProvider with ChangeNotifier {
         'x-ms-blob-type': 'BlockBlob'
       };
       await _commonService.put(
-          url: url, headers: headers, body: fileToUpload, isFile: true, onSendProgress: progressCallback);
+          url: url,
+          headers: headers,
+          body: fileToUpload,
+          isFile: true,
+          onSendProgress: progressCallback);
     } on Exception {
       print("Exception has occurred");
+    }
+  }
+
+  downloadFile(String url, {required String filename}) async {
+    var httpClient = http.Client();
+    var request = new http.Request('GET', Uri.parse(url));
+    var response = httpClient.send(request);
+
+    String? dir = (await  .getExternalStorageDirectory())?.path;
+
+    if(dir!=null) {
+      List<List<int>> chunks = new List.empty(growable: true);
+      int downloaded = 0;
+
+      response.asStream().listen((http.StreamedResponse r) {
+        r.stream.listen((List<int> chunk) {
+          // Display percentage of completion
+          debugPrint(
+              'downloadPercentage: ${downloaded / (r.contentLength as num) *
+                  100}');
+
+          chunks.add(chunk);
+          downloaded += chunk.length;
+        }, onDone: () async {
+          // Display percentage of completion
+          debugPrint(
+              'downloadPercentage: ${downloaded / (r.contentLength as num) *
+                  100}');
+
+          // Save the file
+          io.File file = new io.File("$dir/$filename");
+          final Uint8List bytes = Uint8List(r.contentLength!);
+          int offset = 0;
+          for (List<int> chunk in chunks) {
+            bytes.setRange(offset, offset + chunk.length, chunk);
+            offset += chunk.length;
+          }
+          await file.writeAsBytes(bytes);
+          return;
+        });
+      });
     }
   }
 

@@ -62,7 +62,7 @@ class _DrivePageState extends State<DrivePage> {
         children: [
           DriveHomePage(),
 
-          DriveFiesPage(),
+          DriveFilesPage(),
 
           AccountPage()
         ],
