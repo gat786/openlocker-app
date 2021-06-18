@@ -40,7 +40,7 @@ class _DriveFiesPageState extends State<DriveFiesPage> {
         automaticallyImplyLeading: false,
         title: Text("Files"),
       ),
-      body: Container(
+      body: SingleChildScrollView(
         child: Column(
           children: folderTiles?.followedBy(fileTiles?.toList() ?? []).toList() ?? [],
         ),
