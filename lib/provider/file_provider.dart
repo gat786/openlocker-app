@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,9 +30,12 @@ class FileProvider with ChangeNotifier {
 
   List<File> get flatFiles => _flatFiles;
 
-  List<File> flatFilesByFilter({String discreteMimeType = ""}){
-    if(discreteMimeType != "")
-      return _flatFiles.where((element) => element.contentType?.startsWith(discreteMimeType) ?? false).toList();
+  List<File> flatFilesByFilter({String discreteMimeType = ""}) {
+    if (discreteMimeType != "")
+      return _flatFiles
+          .where((element) =>
+              element.contentType?.startsWith(discreteMimeType) ?? false)
+          .toList();
     else
       return _flatFiles;
   }
@@ -67,7 +70,7 @@ class FileProvider with ChangeNotifier {
       var url = API_ENDPOINT + "blob/download";
       var headers = {
         "Authorization": "Bearer ${this.authProvider?.accessToken}",
-        Headers.contentLengthHeader: ContentType.json.mimeType
+        Headers.contentLengthHeader: io.ContentType.json.mimeType
       };
       var body = {"filename": fileName};
       _commonService = await CommonService.getInstance();
@@ -86,12 +89,30 @@ class FileProvider with ChangeNotifier {
     }
   }
 
+  Future uploadFile(
+      {required String uploadUrl,
+      required io.File fileToUpload,
+      required ProgressCallback progressCallback}) async {
+    try {
+      var url = uploadUrl;
+      var headers = {
+        Headers.contentTypeHeader: io.ContentType.binary.mimeType,
+        'x-ms-version': '2020-04-08',
+        'x-ms-blob-type': 'BlockBlob'
+      };
+      await _commonService.put(
+          url: url, headers: headers, body: fileToUpload, isFile: true, onSendProgress: progressCallback);
+    } on Exception {
+      print("Exception has occurred");
+    }
+  }
+
   Future<String?> getUploadUri({required String fileName}) async {
     try {
       var url = API_ENDPOINT + "blob/upload";
       var headers = {
         "Authorization": "Bearer ${this.authProvider?.accessToken}",
-        Headers.contentLengthHeader: ContentType.json.mimeType
+        Headers.contentLengthHeader: io.ContentType.json.mimeType
       };
       var body = {"filename": fileName};
       _commonService = await CommonService.getInstance();
@@ -115,9 +136,9 @@ class FileProvider with ChangeNotifier {
       var url = API_ENDPOINT + "blob/delete";
       var headers = {
         "Authorization": "Bearer ${this.authProvider?.accessToken}",
-        Headers.contentLengthHeader: ContentType.json.mimeType
+        Headers.contentLengthHeader: io.ContentType.json.mimeType
       };
-      var body = {"filename": fileName };
+      var body = {"filename": fileName};
       _commonService = await CommonService.getInstance();
       var response = await _commonService.post(
           url: url, headers: headers, body: jsonEncode(body));
@@ -134,14 +155,12 @@ class FileProvider with ChangeNotifier {
     }
   }
 
-
-
   Future getHierarchicalFiles({prefix = ""}) async {
     try {
       var url = API_ENDPOINT + "blob";
       var headers = {
         "Authorization": "Bearer ${this.authProvider?.accessToken}",
-        Headers.contentLengthHeader: ContentType.json.mimeType
+        Headers.contentLengthHeader: io.ContentType.json.mimeType
       };
       var body = {"prefix": prefix};
       _commonService = await CommonService.getInstance();

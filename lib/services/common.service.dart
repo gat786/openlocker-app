@@ -63,10 +63,13 @@ class CommonService {
     }
   }
 
-  Future<dynamic> put({required String url, Map<String, String>? headers, dynamic body}) async {
+  Future<dynamic> put({required String url, Map<String, String>? headers, dynamic body, bool isFile = false, ProgressCallback? onSendProgress }) async {
     try {
+      if(isFile){
+        body = await (body as File).readAsBytes();
+      }
       var response = await dio.put(
-          url, options: Options(headers: headers), data: body);
+          url, options: Options(headers: headers), data: body, onSendProgress: onSendProgress);
       return response;
     } on DioError catch (err) {
       print(err.response?.data);
