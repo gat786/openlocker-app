@@ -14,6 +14,9 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  AuthProvider? authProvider;
+  LoadingProvider? loadingProvider;
+
   TextEditingController userNameController = new TextEditingController();
   TextEditingController emailAddressController = new TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -21,25 +24,23 @@ class _SignupPageState extends State<SignupPage> {
   final _signupFormKey = new GlobalKey<FormState>();
   var passwordFieldHidden = true;
 
+  getData() async {
+    if(authProvider?.userData.refreshToken != null && authProvider?.userData.refreshToken != ""){
+      loadingProvider?.isLoading = true;
+      await authProvider?.getAccessToken();
+      loadingProvider?.isLoading = false;
+    }
+    if(authProvider?.isLoggedIn ?? false){
+      SchedulerBinding.instance!.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, Routes.DrivePage);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
-    LoadingProvider loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
-
-    getData() async {
-      if(authProvider.userData.refreshToken != null && authProvider.userData.refreshToken != ""){
-        loadingProvider.isLoading = true;
-        await authProvider.getAccessToken();
-        loadingProvider.isLoading = false;
-      }
-      if(authProvider.isLoggedIn){
-        SchedulerBinding.instance!.addPostFrameCallback((_) {
-          Navigator.pushNamed(context, Routes.DrivePage);
-        });
-      }
-    }
-
-    getData();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+    loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
 
     return Scaffold(
       body: Material(
@@ -124,13 +125,13 @@ class _SignupPageState extends State<SignupPage> {
                             print("Validating");
                             if (_signupFormKey.currentState!.validate()) {
                               // validation successful
-                              loadingProvider.isLoading = true;
-                              await authProvider.signupUser(
+                              loadingProvider?.isLoading = true;
+                              await authProvider?.signupUser(
                                   userName: userNameController.text,
                                   emailAddress: emailAddressController.text,
                                   password: passwordController.text);
-                              loadingProvider.isLoading = false;
-                              if(authProvider.isLoggedIn){
+                              loadingProvider?.isLoading = false;
+                              if(authProvider?.isLoggedIn ?? false){
                                 Navigator.popAndPushNamed(context, Routes.DrivePage);
                               }
                             }

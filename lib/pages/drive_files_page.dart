@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:open_locker_app/models/files_response.dart';
+import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:open_locker_app/widgets/file_list_tile.dart';
@@ -20,9 +21,12 @@ class DriveFilesPage extends StatefulWidget {
 class _DriveFilesPageState extends State<DriveFilesPage> {
   FileProvider? filesProvider;
   LoadingProvider? loadingProvider;
+  AuthProvider? authProvider;
 
   Future getData() async {
+    if(authProvider != null && authProvider?.isLoggedIn == true){
     await filesProvider!.getHierarchicalFiles();
+    }
   }
 
   @override
@@ -38,6 +42,7 @@ class _DriveFilesPageState extends State<DriveFilesPage> {
   Widget build(BuildContext context) {
     filesProvider = Provider.of<FileProvider>(context);
     loadingProvider = Provider.of<LoadingProvider>(context);
+    authProvider = Provider.of<AuthProvider>(context);
 
     var folderTiles = filesProvider?.hierarchicalFiles?.folderPrefix
         ?.map<Widget>((e) => FolderListTile(folderName: e));

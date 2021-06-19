@@ -37,6 +37,7 @@ class AuthProvider with ChangeNotifier {
 
   set accessToken(String newToken) {
     _accessToken = newToken;
+    notifyListeners();
   }
 
   Future logoutUser() async {
@@ -66,8 +67,7 @@ class AuthProvider with ChangeNotifier {
       updateSharedUserPreferences(user);
       userData = user;
       accessToken = login_response.accessToken ?? "";
-    }
-    else{
+    } else {
       throw Exception(standardResponse.message);
     }
   }
@@ -99,47 +99,48 @@ class AuthProvider with ChangeNotifier {
       updateSharedUserPreferences(user);
       userData = user;
       accessToken = login_response.accessToken ?? "";
-    }
-    else{
+    } else {
       throw Exception(standardResponse.message);
     }
   }
 
   Future getAccessToken() async {
-    var uri = API_ENDPOINT + "user/get-new-tokens";
-    CommonService commonService = await CommonService.getInstance();
-    var response = await commonService.post(url: uri);
-    var standardResponse = StandardResponse.fromJson(
-        Map<String, dynamic>.from(jsonDecode(response.toString())));
-    if(standardResponse.success == true){
-      isLoggedIn = true;
-      var login_response =
-      LoginResponse.fromJson(Map.from(standardResponse.data));
-      var user = new User(
-          userName: login_response.username,
-          emailAddress: login_response.emailAddress,
-          refreshToken: login_response.refreshToken?.token ?? "");
-      updateSharedUserPreferences(user);
-      userData = user;
-      accessToken = login_response.accessToken ?? "";
-    }
-    else{
-      print("Login failed");
+    if (userData.refreshToken != null && userData.refreshToken != "" ) {
+      var uri = API_ENDPOINT + "user/get-new-tokens";
+      CommonService commonService = await CommonService.getInstance();
+      var response = await commonService.post(url: uri);
+      var standardResponse = StandardResponse.fromJson(
+          Map<String, dynamic>.from(jsonDecode(response.toString())));
+      if (standardResponse.success == true) {
+        isLoggedIn = true;
+        var login_response =
+            LoginResponse.fromJson(Map.from(standardResponse.data));
+        var user = new User(
+            userName: login_response.username,
+            emailAddress: login_response.emailAddress,
+            refreshToken: login_response.refreshToken?.token ?? "");
+        updateSharedUserPreferences(user);
+        userData = user;
+        accessToken = login_response.accessToken ?? "";
+      } else {
+        print("Login failed");
+      }
     }
   }
 
   void setup() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? username = prefs.getString(USERNAME_KEY);
-    String? emailAddress = prefs.getString(EMAILADDRESS_KEY);
-    String? refreshToken = prefs.getString(REFRESHTOKEN_KEY);
+    String username = prefs.getString(USERNAME_KEY) ?? "";
+    String emailAddress = prefs.getString(EMAILADDRESS_KEY) ?? "";
+    String refreshToken = prefs.getString(REFRESHTOKEN_KEY) ?? "";
 
-    if (username != null && emailAddress != null && refreshToken != null) {
+    if (username != "" && emailAddress != "" && refreshToken != "") {
       userData = User(
           userName: username,
           emailAddress: emailAddress,
           refreshToken: refreshToken);
+      getAccessToken();
     }
   }
 }
