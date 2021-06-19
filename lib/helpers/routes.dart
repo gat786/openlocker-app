@@ -22,7 +22,7 @@ class RoutesGenerator{
       case Routes.SignupPage:
         return MaterialPageRoute(builder: (_) => SignupPage());
       case Routes.ImageViewer:
-        return MaterialPageRoute(builder: (_) => ImagePreview(imageUrl: args?.imageUrl));
+        return MaterialPageRoute(builder: (_) => ImagePreview(imageUrl: (args as Map<String,String>)['imageUrl']!));
       default:
         return MaterialPageRoute(builder: (_) => DrivePage());
     }

@@ -1,20 +1,40 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:http/http.dart' as http;
 
-class ImagePreview extends StatelessWidget {
+class ImagePreview extends StatefulWidget {
   final String imageUrl;
+
   const ImagePreview({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final arguments = ModalRoute.of(context)?.settings.arguments as Map;
+  _ImagePreviewState createState() => _ImagePreviewState();
+}
 
-    if (arguments != null) print(arguments['imageUrl']);
+class _ImagePreviewState extends State<ImagePreview> {
+  Uint8List? byteData;
+
+  getImage() async {
+    var response = await http.get(Uri.parse(widget.imageUrl));
+    if(response.statusCode == 200) {
+      setState(() {
+        byteData = response.bodyBytes;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    getImage();
+
     return Container(
-      child: PhotoView(
-        imageProvider: NetworkImage(imageUrl),
-      ),
+      child: (byteData != null) ? PhotoView(
+        imageProvider: MemoryImage(byteData!),
+      ): Container()
     );
   }
 }

@@ -39,6 +39,21 @@ class _FileListTileState extends State<FileListTile> {
     }
   }
 
+  Icon getIconFromMimetype(String mimeType) {
+    if (mimeType.startsWith('application/pdf')) {
+      return Icon(Icons.picture_as_pdf);
+    } else if (mimeType.startsWith('audio')) {
+      return Icon(Icons.music_note);
+    } else if (mimeType.startsWith("video")) {
+      return Icon(Icons.videocam_sharp);
+    } else if (mimeType.startsWith("image")) {
+      return Icon(Icons.image);
+    }else if (mimeType.startsWith("application/zip")) {
+      return Icon(Icons.compress_outlined);
+    }else {
+      return Icon(Icons.insert_drive_file);
+    }
+  }
 
   changeFileOption(FileOptions optionSelected) async {
     switch(optionSelected){
@@ -82,6 +97,7 @@ class _FileListTileState extends State<FileListTile> {
 
     return ListTile(
       title: Text(widget.file.fileNameWithoutPrefix()),
+      leading: getIconFromMimetype(widget.file.contentType!),
       trailing: PopupMenuButton<FileOptions>(
         onSelected: changeFileOption,
         itemBuilder: (BuildContext context) => <PopupMenuEntry<FileOptions>>[
