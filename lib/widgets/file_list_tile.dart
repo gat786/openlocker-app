@@ -63,6 +63,7 @@ class _FileListTileState extends State<FileListTile> {
         loadingProvider!.isLoading = false;
         break;
       case FileOptions.details:
+        _showDetailsDialog(widget.file);
         break;
       case FileOptions.download:
         String? downloadUrl = await fileProvider!.getDownloadUri(fileName: widget.file.fileName!);
@@ -87,6 +88,27 @@ class _FileListTileState extends State<FileListTile> {
         }
         break;
     }
+  }
+
+  _showDetailsDialog(File file){
+    return showDialog(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        title: Text("File Properties"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Filename - ${file.fileName}"),
+            Text("Content Type - ${file.contentType}"),
+            Text("Size - ${file.contentLength}"),
+            Text("Created on - ${file.createdOn}"),
+            Text("Last Modified on - ${file.lastModified}")
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () { Navigator.of(context).pop(); }, child: Text("Okay"))
+        ],
+      );
+    });
   }
 
   @override
