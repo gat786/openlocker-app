@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mime/mime.dart';
 import 'package:open_locker_app/constants.dart';
 import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/models/files_response.dart';
@@ -103,7 +104,7 @@ class FileProvider with ChangeNotifier {
     try {
       var url = uploadUrl;
       var headers = {
-        Headers.contentTypeHeader: io.ContentType.binary.mimeType,
+        Headers.contentTypeHeader: lookupMimeType(fileToUpload.path) ?? "application/octet-stream",
         'x-ms-version': '2020-04-08',
         'x-ms-blob-type': 'BlockBlob'
       };

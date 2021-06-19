@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/provider/file_provider.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
@@ -55,6 +56,20 @@ class _FileListTileState extends State<FileListTile> {
         }
         break;
       case FileOptions.preview:
+        print(widget.file.contentType);
+        if(widget.file.contentType?.startsWith('image') == true) {
+          String? downloadUrl = await fileProvider!.getDownloadUri(
+              fileName: widget.file.fileName!);
+          if (downloadUrl != null) {
+            var arguments = new Map<String,String>();
+            arguments.putIfAbsent('imageUrl', () => downloadUrl);
+            Navigator.pushNamed(context, Routes.ImageViewer,
+                arguments: arguments);
+          }
+        }
+        else{
+          Fluttertoast.showToast(msg: 'Currently Preview option is only available for images');
+        }
         break;
     }
   }
