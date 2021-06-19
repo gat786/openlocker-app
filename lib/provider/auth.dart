@@ -99,8 +99,9 @@ class AuthProvider with ChangeNotifier {
       updateSharedUserPreferences(user);
       userData = user;
       accessToken = login_response.accessToken ?? "";
+      return user;
     } else {
-      throw Exception(standardResponse.message);
+      return standardResponse.message;
     }
   }
 

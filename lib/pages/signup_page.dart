@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:open_locker_app/helpers/routes.dart';
 import 'package:open_locker_app/helpers/validators.dart';
+import 'package:open_locker_app/models/user.dart';
 import 'package:open_locker_app/provider/auth.dart';
 import 'package:open_locker_app/provider/loading_overlay.dart';
 import 'package:provider/provider.dart';
@@ -25,12 +27,13 @@ class _SignupPageState extends State<SignupPage> {
   var passwordFieldHidden = true;
 
   getData() async {
-    if(authProvider?.userData.refreshToken != null && authProvider?.userData.refreshToken != ""){
+    if (authProvider?.userData.refreshToken != null &&
+        authProvider?.userData.refreshToken != "") {
       loadingProvider?.isLoading = true;
       await authProvider?.getAccessToken();
       loadingProvider?.isLoading = false;
     }
-    if(authProvider?.isLoggedIn ?? false){
+    if (authProvider?.isLoggedIn ?? false) {
       SchedulerBinding.instance!.addPostFrameCallback((_) {
         Navigator.pushNamed(context, Routes.DrivePage);
       });
@@ -45,14 +48,8 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: Material(
         child: Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -64,9 +61,7 @@ class _SignupPageState extends State<SignupPage> {
                     "OPENLOCKER",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Theme
-                            .of(context)
-                            .primaryColor,
+                        color: Theme.of(context).primaryColor,
                         fontSize: 32.0),
                   ),
                 ),
@@ -83,9 +78,7 @@ class _SignupPageState extends State<SignupPage> {
                         TextFormField(
                           controller: userNameController,
                           validator: validateUsername,
-                          decoration: InputDecoration(
-                              hintText: "UserName"
-                          ),
+                          decoration: InputDecoration(hintText: "UserName"),
                         ),
                         SizedBox(
                           height: 8,
@@ -93,9 +86,8 @@ class _SignupPageState extends State<SignupPage> {
                         TextFormField(
                           validator: validateEmail,
                           controller: emailAddressController,
-                          decoration: InputDecoration(
-                              hintText: "Email Address"
-                          ),
+                          decoration:
+                              InputDecoration(hintText: "Email Address"),
                         ),
                         SizedBox(
                           height: 8,
@@ -126,21 +118,28 @@ class _SignupPageState extends State<SignupPage> {
                             if (_signupFormKey.currentState!.validate()) {
                               // validation successful
                               loadingProvider?.isLoading = true;
-                              await authProvider?.signupUser(
+
+                              var response = await authProvider?.signupUser(
                                   userName: userNameController.text,
                                   emailAddress: emailAddressController.text,
                                   password: passwordController.text);
+
+                              if(response is User){
+                                Fluttertoast.showToast(msg: "Successfully signed up");
+                              }
+                              else{
+                                Fluttertoast.showToast(msg: response);
+                              }
                               loadingProvider?.isLoading = false;
-                              if(authProvider?.isLoggedIn ?? false){
-                                Navigator.popAndPushNamed(context, Routes.DrivePage);
+                              if (authProvider?.isLoggedIn ?? false) {
+                                Navigator.popAndPushNamed(
+                                    context, Routes.DrivePage);
                               }
                             }
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
-                                    .primaryColor),
+                                color: Theme.of(context).primaryColor),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -172,9 +171,7 @@ class _SignupPageState extends State<SignupPage> {
                               child: Text(
                                 "Sign in",
                                 style: TextStyle(
-                                    color: Theme
-                                        .of(context)
-                                        .primaryColor),
+                                    color: Theme.of(context).primaryColor),
                               ),
                             )
                           ],
