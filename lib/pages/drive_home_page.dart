@@ -60,8 +60,8 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    fileProvider = Provider.of<FileProvider>(context);
-    authProvider = Provider.of<AuthProvider>(context);
+    fileProvider = Provider.of<FileProvider>(context,listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     Iterable<Widget> files = fileProvider
             ?.flatFilesByFilter(

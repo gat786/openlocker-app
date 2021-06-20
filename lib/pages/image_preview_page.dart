@@ -27,9 +27,14 @@ class _ImagePreviewState extends State<ImagePreview> {
   }
 
   @override
-  Widget build(BuildContext context) {
-
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     getImage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Container(
       child: (byteData != null) ? PhotoView(

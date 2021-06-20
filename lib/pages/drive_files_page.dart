@@ -40,9 +40,9 @@ class _DriveFilesPageState extends State<DriveFilesPage> {
 
   @override
   Widget build(BuildContext context) {
-    filesProvider = Provider.of<FileProvider>(context);
-    loadingProvider = Provider.of<LoadingProvider>(context);
-    authProvider = Provider.of<AuthProvider>(context);
+    filesProvider = Provider.of<FileProvider>(context,listen: false);
+    loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     var folderTiles = filesProvider?.hierarchicalFiles?.folderPrefix
         ?.map<Widget>((e) => FolderListTile(folderName: e));

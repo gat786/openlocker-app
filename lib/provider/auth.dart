@@ -59,6 +59,8 @@ class AuthProvider with ChangeNotifier {
       var standardResponse = StandardResponse.fromJson(
           Map<String, dynamic>.from(jsonDecode(response.toString())));
 
+      print(standardResponse.data);
+
       if (standardResponse.success == true) {
         isLoggedIn = true;
         var login_response =
@@ -95,7 +97,7 @@ class AuthProvider with ChangeNotifier {
     Response? response = await commonService.post(url: uri, body: jsonBody);
     if (response != null && response.data != null) {
       var standardResponse = StandardResponse.fromJson(
-          Map<String, dynamic>.from(jsonDecode(response.data)));
+          Map<String, dynamic>.from(jsonDecode(response.toString())));
 
       isLoggedIn = true;
       var login_response = LoginResponse.fromJson(
