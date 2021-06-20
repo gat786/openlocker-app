@@ -27,12 +27,6 @@ class _SignupPageState extends State<SignupPage> {
   var passwordFieldHidden = true;
 
   getData() async {
-    if (authProvider?.userData.refreshToken != null &&
-        authProvider?.userData.refreshToken != "") {
-      loadingProvider?.isLoading = true;
-      await authProvider?.getAccessToken();
-      loadingProvider?.isLoading = false;
-    }
     if (authProvider?.isLoggedIn ?? false) {
       SchedulerBinding.instance!.addPostFrameCallback((_) {
         Navigator.pushNamed(context, Routes.DrivePage);
@@ -44,6 +38,8 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     authProvider = Provider.of<AuthProvider>(context, listen: false);
     loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
+
+    getData();
 
     return Scaffold(
       body: Material(

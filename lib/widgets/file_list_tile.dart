@@ -83,6 +83,16 @@ class _FileListTileState extends State<FileListTile> {
                 arguments: arguments);
           }
         }
+        // else if(widget.file.contentType?.startsWith('audio') == true){
+        //   String? downloadUrl = await fileProvider!.getDownloadUri(
+        //       fileName: widget.file.fileName!);
+        //   if (downloadUrl != null) {
+        //     var arguments = new Map<String,String>();
+        //     arguments.putIfAbsent('musicUrl', () => downloadUrl);
+        //     Navigator.pushNamed(context, Routes.MusicPlayer,
+        //         arguments: arguments);
+        //   }
+        // }
         else{
           Fluttertoast.showToast(msg: 'Currently Preview option is only available for images');
         }
