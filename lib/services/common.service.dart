@@ -49,9 +49,9 @@ class CommonService {
     }
   }
 
-  Future<dynamic> post({required String url, Map<String, String>? headers, dynamic body}) async {
+  Future<Response?> post({required String url, Map<String, String>? headers, dynamic body}) async {
     try {
-      var response =
+      Response response =
       await dio.post(url, data: body, options: Options(headers: headers));
       return response;
     } on DioError catch (err) {

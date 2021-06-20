@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:open_locker_app/exceptions/token_expired.dart';
 import 'package:open_locker_app/models/files_response.dart';
 import 'package:open_locker_app/models/media_type.dart';
@@ -49,7 +50,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
 
   getFiles() async {
     try {
-      if (authProvider!.isLoggedIn && fileProvider!.flatFiles.length == 0) {
+      if (authProvider!.isLoggedIn) {
         await fileProvider!.getFlatFiles();
       }
     } on TokenExpiredException {
@@ -63,40 +64,35 @@ class _DriveHomePageState extends State<DriveHomePage> {
     authProvider = Provider.of<AuthProvider>(context);
 
     Iterable<Widget> files = fileProvider
-        ?.flatFilesByFilter(
-        discreteMimeType: selectedFileTypeIndex != -1
-            ? MediaTypes[selectedFileTypeIndex].mimeType
-            : "")
-        .map<Widget>((File element) {
-      return FileListTile(file: element);
-    }) ??
+            ?.flatFilesByFilter(
+                discreteMimeType: selectedFileTypeIndex != -1
+                    ? MediaTypes[selectedFileTypeIndex].mimeType
+                    : "")
+            .map<Widget>((File element) {
+          return FileListTile(file: element);
+        }) ??
         [];
 
     return Scaffold(
-      appBar:
-      AppBar(
+      appBar: AppBar(
         title: Text("All Files"),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(onPressed: () {
-            getFiles();
-          }, icon: Icon(Icons.refresh))
+          IconButton(
+              onPressed: () {
+                getFiles();
+              },
+              icon: Icon(Icons.refresh))
         ],
       ),
       body: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
                 height: 50,
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
@@ -144,11 +140,29 @@ class _DriveHomePageState extends State<DriveHomePage> {
               thickness: 2,
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: files.toList(),
-                ),
-              ),
+              child: (files.length > 0)
+                  ? SingleChildScrollView(
+                      child: Column(
+                        children: files.toList(),
+                      ),
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            LineIcons.folderOpen,
+                            size: 48,
+                          ),
+                          SizedBox(height: 16,),
+                          Text(
+                              "Upload files from files tab to see a list here.",
+                            style: TextStyle(fontSize: 20, ),
+                            textAlign: TextAlign.center,
+                          )
+                        ],
+                      ),
+                    ),
             )
           ],
         ),

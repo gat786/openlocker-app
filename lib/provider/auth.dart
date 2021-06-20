@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:open_locker_app/constants.dart';
 import 'package:open_locker_app/models/login_response.dart';
 import 'package:open_locker_app/models/standard_response.dart';
@@ -52,23 +54,28 @@ class AuthProvider with ChangeNotifier {
     var uri = API_ENDPOINT + "user/login";
     var jsonBody = jsonEncode({'username': userName, 'password': password});
     var commonService = await CommonService.getInstance();
-    var response = await commonService.post(url: uri, body: jsonBody);
-    var standardResponse = StandardResponse.fromJson(
-        Map<String, dynamic>.from(jsonDecode(response.toString())));
+    Response? response = await commonService.post(url: uri, body: jsonBody);
+    if(response != null && response.data != null) {
+      var standardResponse = StandardResponse.fromJson(
+          Map<String, dynamic>.from(jsonDecode(response.toString())));
 
-    if (standardResponse.success == true) {
-      isLoggedIn = true;
-      var login_response =
-          LoginResponse.fromJson(Map.from(standardResponse.data));
-      var user = new User(
-          userName: login_response.username,
-          emailAddress: login_response.emailAddress,
-          refreshToken: login_response.refreshToken?.token ?? "");
-      updateSharedUserPreferences(user);
-      userData = user;
-      accessToken = login_response.accessToken ?? "";
-    } else {
-      throw Exception(standardResponse.message);
+      if (standardResponse.success == true) {
+        isLoggedIn = true;
+        var login_response =
+        LoginResponse.fromJson(Map.from(standardResponse.data));
+        var user = new User(
+            userName: login_response.username,
+            emailAddress: login_response.emailAddress,
+            refreshToken: login_response.refreshToken?.token ?? "");
+        updateSharedUserPreferences(user);
+        userData = user;
+        accessToken = login_response.accessToken ?? "";
+        Fluttertoast.showToast(msg: "Successfully logged in");
+      } else {
+        throw Exception(standardResponse.message);
+      }
+    }else{
+      Fluttertoast.showToast(msg: "Username and password combination is wrong");
     }
   }
 
@@ -106,7 +113,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future getAccessToken() async {
-    if (userData.refreshToken != null && userData.refreshToken != "" ) {
+    if (userData.refreshToken != null && userData.refreshToken != "") {
       var uri = API_ENDPOINT + "user/get-new-tokens";
       CommonService commonService = await CommonService.getInstance();
       var response = await commonService.post(url: uri);
@@ -130,6 +137,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   void setup() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String username = prefs.getString(USERNAME_KEY) ?? "";
@@ -141,7 +149,7 @@ class AuthProvider with ChangeNotifier {
           userName: username,
           emailAddress: emailAddress,
           refreshToken: refreshToken);
-      getAccessToken();
+      await getAccessToken();
     }
   }
 }
