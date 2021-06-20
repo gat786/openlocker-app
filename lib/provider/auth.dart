@@ -55,14 +55,14 @@ class AuthProvider with ChangeNotifier {
     var jsonBody = jsonEncode({'username': userName, 'password': password});
     var commonService = await CommonService.getInstance();
     Response? response = await commonService.post(url: uri, body: jsonBody);
-    if(response != null && response.data != null) {
+    if (response != null && response.data != null) {
       var standardResponse = StandardResponse.fromJson(
           Map<String, dynamic>.from(jsonDecode(response.toString())));
 
       if (standardResponse.success == true) {
         isLoggedIn = true;
         var login_response =
-        LoginResponse.fromJson(Map.from(standardResponse.data));
+            LoginResponse.fromJson(Map.from(standardResponse.data));
         var user = new User(
             userName: login_response.username,
             emailAddress: login_response.emailAddress,
@@ -74,12 +74,12 @@ class AuthProvider with ChangeNotifier {
       } else {
         throw Exception(standardResponse.message);
       }
-    }else{
+    } else {
       Fluttertoast.showToast(msg: "Username and password combination is wrong");
     }
   }
 
-  Future signupUser(
+  Future<User?> signupUser(
       {required String userName,
       required String emailAddress,
       required String password}) async {
@@ -92,13 +92,14 @@ class AuthProvider with ChangeNotifier {
     });
 
     CommonService commonService = await CommonService.getInstance();
-    var response = await commonService.post(url: uri, body: jsonBody);
-    var standardResponse = StandardResponse.fromJson(
-        Map<String, dynamic>.from(jsonDecode(response.toString())));
-    if (standardResponse.success == true) {
+    Response? response = await commonService.post(url: uri, body: jsonBody);
+    if (response != null && response.data != null) {
+      var standardResponse = StandardResponse.fromJson(
+          Map<String, dynamic>.from(jsonDecode(response.data)));
+
       isLoggedIn = true;
-      var login_response =
-          LoginResponse.fromJson(Map.from(standardResponse.data));
+      var login_response = LoginResponse.fromJson(
+          Map<String, dynamic>.from(standardResponse.data));
       var user = new User(
           userName: login_response.username,
           emailAddress: login_response.emailAddress,
@@ -107,9 +108,8 @@ class AuthProvider with ChangeNotifier {
       userData = user;
       accessToken = login_response.accessToken ?? "";
       return user;
-    } else {
-      return standardResponse.message;
     }
+    return null;
   }
 
   Future getAccessToken() async {
@@ -137,7 +137,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   void setup() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String username = prefs.getString(USERNAME_KEY) ?? "";

@@ -119,17 +119,11 @@ class _SignupPageState extends State<SignupPage> {
                               // validation successful
                               loadingProvider?.isLoading = true;
 
-                              var response = await authProvider?.signupUser(
+                              await authProvider?.signupUser(
                                   userName: userNameController.text,
                                   emailAddress: emailAddressController.text,
                                   password: passwordController.text);
 
-                              if(response is User){
-                                Fluttertoast.showToast(msg: "Successfully signed up");
-                              }
-                              else{
-                                Fluttertoast.showToast(msg: response);
-                              }
                               loadingProvider?.isLoading = false;
                               if (authProvider?.isLoggedIn ?? false) {
                                 Navigator.popAndPushNamed(
