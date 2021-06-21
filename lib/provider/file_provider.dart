@@ -99,8 +99,7 @@ class FileProvider with ChangeNotifier {
 
   Future uploadFile(
       {required String uploadUrl,
-      required io.File fileToUpload,
-      required ProgressCallback progressCallback}) async {
+      required io.File fileToUpload}) async {
     try {
       var url = uploadUrl;
       var headers = {
@@ -108,12 +107,13 @@ class FileProvider with ChangeNotifier {
         'x-ms-version': '2020-04-08',
         'x-ms-blob-type': 'BlockBlob'
       };
-      await _commonService.put(
-          url: url,
-          headers: headers,
-          body: fileToUpload,
-          isFile: true,
-          onSendProgress: progressCallback);
+
+      await http.put(Uri.parse(url), headers: headers, body: fileToUpload.readAsBytesSync());
+
+      // await _commonService.put(
+      //     url: url,
+      //     headers: headers,
+      //     onSendProgress: progressCallback);
     } on Exception {
       print("Exception has occurred");
     }

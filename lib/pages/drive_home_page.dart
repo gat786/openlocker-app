@@ -38,17 +38,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
     });
   }
 
-  // Added a new comment just to test out tagging
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (fileProvider != null) {
-      getFiles();
-    }
-  }
-
-  getFiles() async {
+  getData() async {
     try {
       if (authProvider!.isLoggedIn) {
         await fileProvider!.getFlatFiles();
@@ -58,10 +48,21 @@ class _DriveHomePageState extends State<DriveHomePage> {
     }
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => getData());
+  }
+
   @override
   Widget build(BuildContext context) {
-    fileProvider = Provider.of<FileProvider>(context,listen: false);
+    fileProvider = Provider.of<FileProvider>(context);
     authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    print("rendered");
 
     Iterable<Widget> files = fileProvider
             ?.flatFilesByFilter(
@@ -80,7 +81,7 @@ class _DriveHomePageState extends State<DriveHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                getFiles();
+                getData();
               },
               icon: Icon(Icons.refresh))
         ],

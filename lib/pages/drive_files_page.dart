@@ -24,23 +24,22 @@ class _DriveFilesPageState extends State<DriveFilesPage> {
   AuthProvider? authProvider;
 
   Future getData() async {
-    if(authProvider != null && authProvider?.isLoggedIn == true){
-    await filesProvider!.getHierarchicalFiles();
+    if (authProvider != null && authProvider?.isLoggedIn == true) {
+      await filesProvider!.getHierarchicalFiles();
     }
   }
 
   @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    if (filesProvider != null) {
-      getData();
-    }
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => getData());
   }
 
   @override
   Widget build(BuildContext context) {
-    filesProvider = Provider.of<FileProvider>(context,listen: false);
+    filesProvider = Provider.of<FileProvider>(context);
     loadingProvider = Provider.of<LoadingProvider>(context, listen: false);
     authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -80,14 +79,10 @@ class _DriveFilesPageState extends State<DriveFilesPage> {
                 fileName: result.files.first.name);
             // print("Url to upload file is ${uploadUrl}");
             loadingProvider?.isLoading = true;
-            filesProvider?.uploadFile(
+            await filesProvider?.uploadFile(
                 uploadUrl: uploadUrl!,
-                fileToUpload: file,
-                progressCallback: (int count, int total) {
-                  if (count.floor() % total.floor() == 0) {
-                    loadingProvider?.isLoading = false;
-                  }
-                });
+                fileToUpload: file);
+            loadingProvider?.isLoading = false;
           } else {
             // User canceled the picker
             Fluttertoast.showToast(msg: "Select a file to upload");

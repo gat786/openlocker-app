@@ -17,7 +17,7 @@ class AccountPage extends StatelessWidget {
           height: 120,
           width: 120,
           child: Center(
-              child: Text("GT".toUpperCase(),
+              child: Text("${authProvider.userData.userName?.substring(0, 2)}".toUpperCase(),
                 style: TextStyle(fontSize: 24),
               )
           ),
